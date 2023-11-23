@@ -36,7 +36,7 @@ exports.RegisterWithOtp = async (req, res, next) => {
     const sent = await sendOtp("email", otp, req.body.email);
     console.log(sent, "checking upon depoying");
     if (!sent.status) return next(new ErrorResponse(sent.message, 401));
-    return res.status(200).json({ status: true, data: user });
+    return res.status(200).json({ status: true, message: "otp sent" });
   } catch (error) {
     next(error);
   }

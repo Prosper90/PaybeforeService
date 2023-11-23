@@ -1,9 +1,9 @@
-require("dotenv").config();
 const nodemailer = require("nodemailer");
 
 const sendEmail = (otp, reciepient, next) => {
   try {
     // Create a transporter object using your SMTP server details
+    console.log("called in here here");
     const transporter = nodemailer.createTransport({
       service: "Gmail", // e.g., "Gmail", "Outlook", "Yahoo", or use your SMTP server details
       auth: {
@@ -23,11 +23,9 @@ const sendEmail = (otp, reciepient, next) => {
     // Send email
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        return { status: false, message: error };
-        //console.error("Error sending email:", error);
+        console.error("Error sending email:", error);
       } else {
-        //console.log("Email sent successfully:", info.response);
-        return { status: true, message: info.response };
+        console.log("Email sent successfully:", info.response);
       }
     });
   } catch (error) {

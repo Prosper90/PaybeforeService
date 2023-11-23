@@ -16,7 +16,7 @@ const sendSMS = async (otp, reciepient, next) => {
       return { status: false, message: "Failed to send message" };
     }
   } catch (error) {
-    return { status: false, message: error };
+    next(error);
   }
 };
 

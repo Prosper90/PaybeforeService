@@ -164,3 +164,12 @@
 {"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-11-23T05:43:59.583Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/webhook/Handle","timestamp":"2023-11-23T05:44:33.347Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/payment/redeemPayment","timestamp":"2023-11-23T05:45:22.135Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:28:10.882Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:32:34.005Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:36:47.745Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:38:19.283Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:39:35.285Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:40:44.255Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:41:47.466Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:48:41.231Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:49:11.312Z"}

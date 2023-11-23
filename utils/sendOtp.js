@@ -7,13 +7,14 @@ async function sendOtp(type, otp, reciepient, next) {
   let status;
   if (type == "email") {
     //send to email
-    status = sendEmail(otp, reciepient, next);
+    console.log("Entereed in in here");
+    await sendEmail(otp, reciepient, next);
   } else {
     //Send to sms
-    status = sendSMS(otp, reciepient, next);
+    status = await sendSMS(otp, reciepient, next);
   }
 
-  return status;
+  return { status: true, message: "here there" };
 }
 
 module.exports = { sendOtp };
