@@ -19,7 +19,7 @@ exports.RegisterWithOtp = async (req, res, next) => {
   const userCheck = await User.findOne({ email: req.body.email });
   if (userCheck) {
     return next(
-      new ErrorResponse("User aleady exists, verify account to continue", 401)
+      new ErrorResponse("User aleady exists, verify account to continue", 201)
     );
   }
   try {
