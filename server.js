@@ -42,7 +42,7 @@ app.use(ErrorHandler);
 
 //ini my database
 mongoose
-  .connect("mongodb://localhost:27017/PayBService", {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     dbName: "PayBService",
