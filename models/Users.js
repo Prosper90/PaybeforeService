@@ -40,6 +40,11 @@ const userSchema = mongoose.Schema(
     first_name: { type: String },
     last_name: { type: String },
     full_name: { type: String },
+    username: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
     otp: { type: Number, default: null },
     otpExpire: { type: Date, default: null },
     local_id: { type: String },

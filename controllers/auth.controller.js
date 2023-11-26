@@ -80,7 +80,7 @@ exports.VerifyOtpSignUp = async (req, res, next) => {
 
   try {
     if (user.otp !== otpRecieved) {
-      return next(new ErrorResponse("Invalid token", 401));
+      return next(new ErrorResponse("Otp doesnt exist", 401));
     }
 
     const currentTimestamp = Date.now(); // Current timestamp in seconds
@@ -104,7 +104,7 @@ exports.VerifyOtpSignUp = async (req, res, next) => {
 // users creates account header
 // before storing to the database
 exports.CreateAccount = async (req, res, next) => {
-  const { first_name, last_name, phone_number, email, password } = req.body;
+  const { username, phone_number, email, password } = req.body;
 
   try {
     //Add checks for some other things
@@ -124,8 +124,7 @@ exports.CreateAccount = async (req, res, next) => {
       { _id: userCheck },
       {
         $set: {
-          first_name: first_name,
-          last_name: last_name,
+          username: username,
           phone_number: phone_number,
           full_name: `${last_name} ${first_name}`,
           email: email,
