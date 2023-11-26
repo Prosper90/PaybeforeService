@@ -47,7 +47,7 @@ exports.ResendOtp = async (req, res, next) => {
   console.log("11111111111");
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
-    return next(new ErrorResponse("No Token", 401));
+    return next(new ErrorResponse("Email  doesnt exist", 401));
   }
   try {
     const otp = crypto.randomInt(100000, 1000000); // Generates a 7-character OTP

@@ -173,3 +173,7 @@
 {"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:41:47.466Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:48:41.231Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-23T13:49:11.312Z"}
+{"level":"info","message":"PUT /PayBeforeService/v1/auth/resendOtp","timestamp":"2023-11-26T12:13:58.875Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-26T12:15:30.268Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/verifyOtpReg","timestamp":"2023-11-26T12:16:11.030Z"}
+{"level":"info","message":"PUT /PayBeforeService/v1/auth/resendOtp","timestamp":"2023-11-26T12:16:22.871Z"}
