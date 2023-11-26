@@ -125,8 +125,18 @@ exports.GetProfile = async (req, res, next) => {
  * @param {*} next
  */
 exports.updateVerifyProfile = async (req, res, next) => {
-  const { address, state, city, bvn, gender, date_of_birth, face_image, zip } =
-    req.body;
+  const {
+    first_name,
+    last_name,
+    address,
+    state,
+    city,
+    bvn,
+    date_of_birth,
+    face_image,
+    zip,
+    phone_number,
+  } = req.body;
 
   try {
     //Add checks for some other things
@@ -154,10 +164,10 @@ exports.updateVerifyProfile = async (req, res, next) => {
     // Create a customer on third party request body
     const CustomerRequestData = {
       email: req.user.email,
-      phone_number: req.user.phone_number,
+      phone_number: phone_number,
       bvn: bvn,
-      first_name: req.user.first_name,
-      last_name: req.user.last_name,
+      first_name: first_name,
+      last_name: last_name,
       customer_type: "Personal",
     };
 
@@ -190,7 +200,8 @@ exports.updateVerifyProfile = async (req, res, next) => {
             city: city,
             state: state,
             country: "NG",
-            date_of_birth: date_of_birth,
+            date_of_birth: req.user.date_of_birth,
+            phone_number: phone_number,
           },
         },
         { new: true }
@@ -204,7 +215,7 @@ exports.updateVerifyProfile = async (req, res, next) => {
     const VerifyIdentityRequestData = {
       place_of_birth: state,
       dob: formattedDate,
-      gender: gender,
+      gender: req.user.gender,
       country: "Nigeria",
       address: {
         street: address,
