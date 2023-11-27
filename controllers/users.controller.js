@@ -19,11 +19,11 @@ exports.ForgetPasswordRequest = async (req, res, next) => {
   if (!user) return next(new ErrorResponse("user does not exist", 401));
   const secret = process.env.JWT_SECRET + user.password;
   const payload = {
-    email: user.contact.email,
+    email: user.email,
     id: user._id,
   };
   const token = jwt.sign(payload, secret, { expiresIn: "1h" }); // Set the expiration time as needed
-  const link = `http://localhost:3000/samplelink/?token=${token}&user=${user._id}`;
+  const link = `http://localhost:5173/reset-password/?token=${token}&user=${user._id}`;
   sendPasswordEmail(link, email);
   res.status(200).json({ status: true, message: "email sent" });
 };

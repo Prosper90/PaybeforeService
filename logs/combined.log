@@ -177,3 +177,11 @@
 {"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-26T12:15:30.268Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/auth/verifyOtpReg","timestamp":"2023-11-26T12:16:11.030Z"}
 {"level":"info","message":"PUT /PayBeforeService/v1/auth/resendOtp","timestamp":"2023-11-26T12:16:22.871Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2023-11-26T15:54:26.895Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/verifyOtpReg","timestamp":"2023-11-26T15:54:51.329Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/signup","timestamp":"2023-11-26T15:55:15.061Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/forgetPasswordRequest/nkonyeprosper@gmail.com","timestamp":"2023-11-27T16:55:38.916Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/forgetPasswordRequest/nkonyeprosper@gmail.com","timestamp":"2023-11-27T16:56:50.695Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/forgetPasswordRequest/nkonyeprosper@gmail.com","timestamp":"2023-11-27T16:58:34.685Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/forgetPasswordRequest/faithgodwin821@gmail.com","timestamp":"2023-11-27T16:59:06.906Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/forgetPasswordRequest/faithgodwin821@gmail.com","timestamp":"2023-11-27T16:59:36.816Z"}

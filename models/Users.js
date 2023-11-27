@@ -48,6 +48,7 @@ const userSchema = mongoose.Schema(
     otp: { type: Number, default: null },
     otpExpire: { type: Date, default: null },
     local_id: { type: String },
+    location: { type: String },
     bvn: { type: String },
     kyc: { type: String },
     phone_number: {

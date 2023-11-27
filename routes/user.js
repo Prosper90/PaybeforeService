@@ -6,16 +6,11 @@ const userController = require("../controllers/users.controller");
 
 //for personal profiles
 router.get(
-  "/forgetPasswordRequest",
-  requireAuth,
+  "/forgetPasswordRequest/:email",
   userController.ForgetPasswordRequest
 );
 
-router.put(
-  "/forgetPasswordUpdate",
-  requireAuth,
-  userController.ForgetPasswordUpdate
-);
+router.put("/forgetPasswordUpdate", userController.ForgetPasswordUpdate);
 
 router.put("/updatePassword", requireAuth, userController.UpdatePassword);
 
