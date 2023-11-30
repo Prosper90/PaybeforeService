@@ -130,7 +130,7 @@ exports.GeneratePaymentLink = async (req, res, next) => {
     if (paymentGenerated)
       res
         .status(200)
-        .json({ status: true, data: paymentGenerated, link: link });
+        .json({ status: true, data: newPayment.linkID, link: link });
   } catch (error) {
     next(error);
   }
@@ -211,7 +211,7 @@ exports.MakePaymentToLink = async (req, res, next) => {
   //Logic is
   //check that link is not expired
   //make payment to wallet, update paymentLink and store reedem code there.
-  const { payment_id } = req.body;
+  const { payment_id, account_id } = req.body;
 
   try {
     const userPayment = await User.findOne({
@@ -224,7 +224,7 @@ exports.MakePaymentToLink = async (req, res, next) => {
       amount:
         userPayment.paymentLink.find((one) => one.linkID === payment_id)
           .amount * 100, //sample 1000
-      account_id: userPayment.account.issue_id, //sample USD
+      account_id: account_id, //sample USD
     };
     // Define the request headers and data
     const headers = generateLocalHeader();
