@@ -124,183 +124,183 @@ exports.GetProfile = async (req, res, next) => {
  * @param {*} res
  * @param {*} next
  */
-exports.updateVerifyProfile = async (req, res, next) => {
-  const {
-    first_name,
-    last_name,
-    address,
-    state,
-    city,
-    bvn,
-    date_of_birth,
-    face_image,
-    zip,
-    phone_number,
-  } = req.body;
+// exports.updateVerifyProfile = async (req, res, next) => {
+//   const {
+//     first_name,
+//     last_name,
+//     address,
+//     state,
+//     city,
+//     bvn,
+//     date_of_birth,
+//     face_image,
+//     zip,
+//     phone_number,
+//   } = req.body;
 
-  try {
-    //Add checks for some other things
-    //check if the user is verified
-    let user;
-    let customerData;
-    let identityData;
-    let virtualAccountData;
+//   try {
+//     //Add checks for some other things
+//     //check if the user is verified
+//     let user;
+//     let customerData;
+//     let identityData;
+//     let virtualAccountData;
 
-    const userCheck = await User.findOne({ _id: req.user._id });
-    user = userCheck;
-    if (!userCheck) return next(new ErrorResponse("User not found", 401));
-    // //convert date
-    const originalDate = date_of_birth;
-    const dateObject = new Date(originalDate);
-    const year = dateObject.getUTCFullYear();
-    const month = `0${dateObject.getUTCMonth() + 1}`.slice(-2);
-    const day = `0${dateObject.getUTCDate()}`.slice(-2);
-    const formattedDate = `${year}-${month}-${day}`;
+//     const userCheck = await User.findOne({ _id: req.user._id });
+//     user = userCheck;
+//     if (!userCheck) return next(new ErrorResponse("User not found", 401));
+//     // //convert date
+//     const originalDate = date_of_birth;
+//     const dateObject = new Date(originalDate);
+//     const year = dateObject.getUTCFullYear();
+//     const month = `0${dateObject.getUTCMonth() + 1}`.slice(-2);
+//     const day = `0${dateObject.getUTCDate()}`.slice(-2);
+//     const formattedDate = `${year}-${month}-${day}`;
 
-    const createCustomerApiUrl = `${process.env.LOCAL_BASE}v1/customers`;
+//     const createCustomerApiUrl = `${process.env.LOCAL_BASE}v1/customers`;
 
-    const headersLocal = generateLocalHeader();
+//     const headersLocal = generateLocalHeader();
 
-    // Create a customer on third party request body
-    const CustomerRequestData = {
-      email: req.user.email,
-      phone_number: phone_number,
-      bvn: bvn,
-      first_name: first_name,
-      last_name: last_name,
-      customer_type: "Personal",
-    };
+//     // Create a customer on third party request body
+//     const CustomerRequestData = {
+//       email: req.user.email,
+//       phone_number: phone_number,
+//       bvn: bvn,
+//       first_name: first_name,
+//       last_name: last_name,
+//       customer_type: "Personal",
+//     };
 
-    //make  local call
-    //create a customer //check if user has an account already maybe experieneced issue with network
-    if (!userCheck.local_id) {
-      const responseLocalCreateCustomer = await makecall(
-        createCustomerApiUrl,
-        CustomerRequestData,
-        headersLocal,
-        "post",
-        next
-      );
+//     //make  local call
+//     //create a customer //check if user has an account already maybe experieneced issue with network
+//     if (!userCheck.local_id) {
+//       const responseLocalCreateCustomer = await makecall(
+//         createCustomerApiUrl,
+//         CustomerRequestData,
+//         headersLocal,
+//         "post",
+//         next
+//       );
 
-      if (!responseLocalCreateCustomer.success) {
-        return next(
-          new ErrorResponse(responseLocalCreateCustomer.message, 400)
-        );
-      }
-      customerData = responseLocalCreateCustomer.data;
-      //Hashing passwords and referrals
+//       if (!responseLocalCreateCustomer.success) {
+//         return next(
+//           new ErrorResponse(responseLocalCreateCustomer.message, 400)
+//         );
+//       }
+//       customerData = responseLocalCreateCustomer.data;
+//       //Hashing passwords and referrals
 
-      user = await User.findOneAndUpdate(
-        { _id: req.user._id },
-        {
-          $set: {
-            local_id: customerData?.id,
-            bvn: bvn,
-            address: address,
-            city: city,
-            state: state,
-            country: "NG",
-            date_of_birth: req.user.date_of_birth,
-            phone_number: phone_number,
-          },
-        },
-        { new: true }
-      );
-    }
+//       user = await User.findOneAndUpdate(
+//         { _id: req.user._id },
+//         {
+//           $set: {
+//             local_id: customerData?.id,
+//             bvn: bvn,
+//             address: address,
+//             city: city,
+//             state: state,
+//             country: "NG",
+//             date_of_birth: req.user.date_of_birth,
+//             phone_number: phone_number,
+//           },
+//         },
+//         { new: true }
+//       );
+//     }
 
-    const verifyIdentityApiUrl = `${process.env.LOCAL_BASE}/v1/customers/upgrade/t1/${user.local_id}`;
-    const createVirtualAccountApiUrl = `${process.env.LOCAL_BASE}/v1/accounts`;
+//     const verifyIdentityApiUrl = `${process.env.LOCAL_BASE}/v1/customers/upgrade/t1/${user.local_id}`;
+//     const createVirtualAccountApiUrl = `${process.env.LOCAL_BASE}/v1/accounts`;
 
-    //Verify Identity request body
-    const VerifyIdentityRequestData = {
-      place_of_birth: state,
-      dob: formattedDate,
-      gender: req.user.gender,
-      country: "Nigeria",
-      address: {
-        street: address,
-        city: city,
-        state: state,
-        country: "NG",
-        postal_code: zip,
-      },
-      image: face_image,
-    };
+//     //Verify Identity request body
+//     const VerifyIdentityRequestData = {
+//       place_of_birth: state,
+//       dob: formattedDate,
+//       gender: req.user.gender,
+//       country: "Nigeria",
+//       address: {
+//         street: address,
+//         city: city,
+//         state: state,
+//         country: "NG",
+//         postal_code: zip,
+//       },
+//       image: face_image,
+//     };
 
-    //Create a virtual account request body
-    const VirtualAccountRequestData = {
-      customer_id: user.local_id,
-      preferred_bank: "Wema",
-      alias: "paybeforeservice",
-    };
+//     //Create a virtual account request body
+//     const VirtualAccountRequestData = {
+//       customer_id: user.local_id,
+//       preferred_bank: "Wema",
+//       alias: "paybeforeservice",
+//     };
 
-    //Verify identity
-    if (user.kyc !== "1") {
-      const responseVerifyidentity = await makecall(
-        verifyIdentityApiUrl,
-        VerifyIdentityRequestData,
-        headersLocal,
-        "put",
-        next
-      );
-      if (!responseVerifyidentity.success) {
-        return next(new ErrorResponse(responseVerifyidentity.message, 400));
-      }
-      identityData = responseVerifyidentity.data;
+//     //Verify identity
+//     if (user.kyc !== "1") {
+//       const responseVerifyidentity = await makecall(
+//         verifyIdentityApiUrl,
+//         VerifyIdentityRequestData,
+//         headersLocal,
+//         "put",
+//         next
+//       );
+//       if (!responseVerifyidentity.success) {
+//         return next(new ErrorResponse(responseVerifyidentity.message, 400));
+//       }
+//       identityData = responseVerifyidentity.data;
 
-      user = await User.findOneAndUpdate(
-        { _id: req.user._id },
-        {
-          $set: {
-            kyc: identityData.kyc_tier,
-          },
-        },
-        { new: true }
-      );
+//       user = await User.findOneAndUpdate(
+//         { _id: req.user._id },
+//         {
+//           $set: {
+//             kyc: identityData.kyc_tier,
+//           },
+//         },
+//         { new: true }
+//       );
 
-      console.log(identityData, "twooooooooooooooo");
-    }
+//       console.log(identityData, "twooooooooooooooo");
+//     }
 
-    //Create a virtual account
-    if (!user.account?.issue_id) {
-      const responseLocalVirtualAccount = await makecall(
-        createVirtualAccountApiUrl,
-        VirtualAccountRequestData,
-        headersLocal,
-        "post",
-        next
-      );
-      if (!responseLocalVirtualAccount.success) {
-        return next(
-          new ErrorResponse(responseLocalVirtualAccount.message, 400)
-        );
-      }
-      virtualAccountData = responseLocalVirtualAccount.data;
+//     //Create a virtual account
+//     if (!user.account?.issue_id) {
+//       const responseLocalVirtualAccount = await makecall(
+//         createVirtualAccountApiUrl,
+//         VirtualAccountRequestData,
+//         headersLocal,
+//         "post",
+//         next
+//       );
+//       if (!responseLocalVirtualAccount.success) {
+//         return next(
+//           new ErrorResponse(responseLocalVirtualAccount.message, 400)
+//         );
+//       }
+//       virtualAccountData = responseLocalVirtualAccount.data;
 
-      user = await User.findOneAndUpdate(
-        { _id: req.user._id },
-        {
-          $set: {
-            account: {
-              issue_id: virtualAccountData.id,
-              account_Name: virtualAccountData.customer.name,
-              account_Number: virtualAccountData.account_number,
-              bank: virtualAccountData.bank_name,
-              digits_after_decimal_separator: 2,
-              isActive: true,
-            },
-          },
-        },
-        { new: true }
-      );
-    }
+//       user = await User.findOneAndUpdate(
+//         { _id: req.user._id },
+//         {
+//           $set: {
+//             account: {
+//               issue_id: virtualAccountData.id,
+//               account_Name: virtualAccountData.customer.name,
+//               account_Number: virtualAccountData.account_number,
+//               bank: virtualAccountData.bank_name,
+//               digits_after_decimal_separator: 2,
+//               isActive: true,
+//             },
+//           },
+//         },
+//         { new: true }
+//       );
+//     }
 
-    res.status(200).json({ status: true, data: user });
-  } catch (error) {
-    // Call handleErrors function
-    next(error);
-  }
-};
+//     res.status(200).json({ status: true, data: user });
+//   } catch (error) {
+//     // Call handleErrors function
+//     next(error);
+//   }
+// };
 
 /**
  * this route is to update user profile
@@ -394,7 +394,7 @@ exports.withdraw = async (req, res, next) => {
 
     await transaction.save();
 
-    const transferUrl = `${process.env.LOCAL_BASE}/v1/transfers`;
+    const transferUrl = `${process.env.LOCAL_BASE}/v1/transfers/balance`;
     // Define the request headers and data
     const headers = generateLocalHeader(next);
     // Generate headers
@@ -405,7 +405,6 @@ exports.withdraw = async (req, res, next) => {
       bank_code: bank_code,
       account_number: account_number,
       narration: description,
-      account_id: req.user.local_id,
       reference: ref,
     };
 

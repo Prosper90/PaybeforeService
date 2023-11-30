@@ -46,5 +46,5 @@ transactionSchema.set("toJSON", {
 });
 
 module.exports = {
-  Transactions: mongoose.model("Transactions", transactionSchema),
+  Transaction: mongoose.model("Transaction", transactionSchema),
 };

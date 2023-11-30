@@ -1,8 +1,3 @@
-require("dotenv").config();
-const bcrypt = require("bcrypt");
-const { sendResponseWithToken } = require("../utils/handleResponse");
-const { randomInt } = require("crypto");
-const { header } = require("express/lib/request");
 const { makecall } = require("../utils/makeRequest");
 const crypto = require("crypto");
 const ErrorResponse = require("../utils/errorResponse.js");
@@ -25,13 +20,10 @@ exports.GetpaymentDetailsfromIDOrLink = async (req, res, next) => {
       "paymentLink.linkID": payment_id,
     });
     if (!user) return next(new ErrorResponse("Id does not exist", 400));
-    if (user.kyc === "0")
-      return next(new ErrorResponse("This user cannot recieve payments", 400));
     //get the particular payment
     const paymentGet = user.paymentLink.find(
       (element) => element.linkID === payment_id
     );
-    console.log(paymentGet, "Payment getters");
     //check status is not successfull
     if (paymentGet.status === "Redeemed")
       return next(
@@ -47,12 +39,15 @@ exports.GetpaymentDetailsfromIDOrLink = async (req, res, next) => {
     if (Date.now() > Date.parse(paymentGet.expired))
       return next(new ErrorResponse("Payment is expired.", 401));
 
+    // account_number: values.account_number,
+    // bank_name: values.bank_name,
+    // account_name: values.name,
     const paymentObject = {
       clientName: user.full_name,
       amount: paymentGet.amount,
-      accountName: user.account.account_Name,
-      accountNumber: user.account.account_Number,
-      bank: user.account.bank,
+      accountName: paymentGet.account_name,
+      accountNumber: paymentGet.account_number,
+      bank: paymentGet.bank_name,
       expiration: paymentGet.expired,
     };
 
@@ -73,11 +68,36 @@ exports.GeneratePaymentLink = async (req, res, next) => {
   //I generate an object with a unique ID, created date and expiration date.
   //update my database, and append the id to the url and return the url and object.
   //checks
-  if (!req.user.kyc)
-    return next(
-      new ErrorResponse("Verify your account to use this feature", 401)
-    );
   const { amount } = req.body;
+
+  const apiUrl = `${process.env.LOCAL_BASE}v1/accounts/collections`;
+
+  const headersLocal = generateLocalHeader();
+
+  // Create a customer on third party request body
+  const RequestData = {
+    preferred_bank: "Wema",
+    alias: req.user.first_name,
+    collection_rules: {
+      frequency: 1,
+      amount: amount * 100,
+    },
+  };
+
+  //make  local call
+  const responseLocal = await makecall(
+    apiUrl,
+    RequestData,
+    headersLocal,
+    "post",
+    next
+  );
+
+  if (!responseLocal.success) {
+    return next(new ErrorResponse(responseLocal.message, 400));
+  }
+  const values = responseLocal.data;
+
   const appendId = generateRandomAlphaNumeric(6);
   const base = `${req.protocol}://${req.hostname}`;
   const link = `${base}/${appendId}`;
@@ -86,6 +106,10 @@ exports.GeneratePaymentLink = async (req, res, next) => {
   try {
     const newPayment = {
       linkID: appendId,
+      issue_id: values.id,
+      account_number: values.account_number,
+      bank_name: values.bank_name,
+      account_name: values.name,
       expired: Expire,
       amount: amount,
       status: "pending",
@@ -141,7 +165,7 @@ exports.ReedemPayment = async (req, res, next) => {
     if (!codeChecker.isPaid)
       return next(new ErrorResponse("This Link has no payment attached", 401));
 
-    await User.findOneAndUpdate(
+    const updatedChecker = await User.findOneAndUpdate(
       { _id: req.user._id, "paymentLink.redeemCode": redeemCode },
       {
         $set: { "paymentLink.$.status": "Reedemed" },
@@ -149,7 +173,8 @@ exports.ReedemPayment = async (req, res, next) => {
           "balances.pending_wallet": -codeChecker.amount,
           "balances.main_wallet": codeChecker.amount,
         },
-      }
+      },
+      { new: true }
     );
 
     //update user, transaction and notifications, and even visitor
@@ -164,7 +189,9 @@ exports.ReedemPayment = async (req, res, next) => {
     const settledObject = {
       id: codeChecker.linkID,
       amount: codeChecker.amount,
-      status: codeChecker.status,
+      status: updatedChecker.paymentLink.find(
+        (gotten) => gotten.redeemCode === redeemCode
+      ).status,
       paid: codeChecker.isPaid,
     };
 
@@ -191,13 +218,8 @@ exports.MakePaymentToLink = async (req, res, next) => {
       paymentLink: { $elemMatch: { linkID: payment_id } },
     });
     if (!userPayment) return new ErrorResponse("Id does not exist", 400);
-    const redeemCode = crypto.randomInt(100000, 100001);
     const apiUrl = `${process.env.LOCAL_BASE}/v1/accounts/credit/manual`;
 
-    console.log(
-      userPayment.paymentLink.find((one) => one.linkID === payment_id).amount,
-      "dirty boy"
-    );
     const requestData = {
       amount:
         userPayment.paymentLink.find((one) => one.linkID === payment_id)
@@ -212,25 +234,11 @@ exports.MakePaymentToLink = async (req, res, next) => {
 
     const values = response.data;
 
-    const paymentGenerated = await User.findOneAndUpdate(
-      {
-        _id: userPayment._id,
-        "paymentLink.linkID": payment_id,
-      },
-      {
-        $set: { "paymentLink.$.redeemCode": redeemCode }, // update the redeem code
-        // $push: { transactions: transaction._id }, // Add the transaction to the array
-      },
-      { new: true }
-    );
-
-    if (paymentGenerated)
-      return res.status(200).json({
-        status: true,
-        data: paymentGenerated.paymentLink.find(
-          (one) => one.linkID === payment_id
-        ).redeemCode,
-      });
+    return res.status(200).json({
+      status: true,
+      message: "Payment sent",
+      data: values,
+    });
   } catch (error) {
     next(error);
   }

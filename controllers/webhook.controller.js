@@ -22,11 +22,16 @@ exports.Hooks = async (req, res, next) => {
   try {
     const { event, data } = req.body;
     let message;
+    let returnedData;
 
     //This is for creadit (like depositing into an account)
     if (event === "transaction.new" && data.drcr === "CR") {
       console.log("data one");
-      const user = await User.findOne({ local_id: data.customer_id });
+      const user = await User.findOne({
+        paymentLink: {
+          $elemMatch: { issue_id: data.account_id },
+        },
+      });
       if (!user) return next(new ErrorResponse("No such user found", 401));
       console.log("data two", user);
       //create a new transaction
@@ -45,11 +50,13 @@ exports.Hooks = async (req, res, next) => {
 
       transaction.save();
 
+      const redeemCode = crypto.randomInt(100000, 1000000);
+
       //update a user
       await User.findOneAndUpdate(
         {
           _id: user._id,
-          "paymentLink.isPaid": false,
+          "paymentLink.issue_id": data.account_id,
         },
         {
           $inc: {
@@ -57,7 +64,10 @@ exports.Hooks = async (req, res, next) => {
               (data.amount / 100).toFixed(2)
             ),
           },
-          $set: { "paymentLink.$.isPaid": true },
+          $set: {
+            "paymentLink.$.isPaid": true,
+            "paymentLink.$.redeemCode": redeemCode,
+          },
           $push: { recent_transactions: transaction._id },
         },
         { new: true }
@@ -70,6 +80,7 @@ exports.Hooks = async (req, res, next) => {
       //   next
       // );
 
+      returnedData = redeemCode; //user.paymentLink.find( (one) => one.issue_id === data.account_id).redeemCode,
       message = `Deposit ${
         data.status === "successful" ? "successful" : "failed"
       }`;
@@ -77,7 +88,9 @@ exports.Hooks = async (req, res, next) => {
 
     //This is for debit, (like withdrawals)
     if (event === "transaction.new" && data.drcr === "DR") {
-      const user = await User.findOne({ local_id: data.customer_id });
+      //flow here is to find tx, by track_id the get the user id and from there get the user
+      const tx = await User.findOne({ track_id: data.reference });
+      const user = await User.findOne({ _id: tx.sender.wallet });
       if (!user) return next(new ErrorResponse("No such user found", 401));
 
       //update created transaction
@@ -106,58 +119,10 @@ exports.Hooks = async (req, res, next) => {
       }`;
     }
 
-    //This is for documents (specifically, kyc upgrade)
-    if (event === "customer.kyc.upgraded.t1") {
-      const user = await User.findOne({ bvn: data.bvn });
-      if (!user) return next(new ErrorResponse("No user found", 401));
-
-      if (data.kyc_tier !== "1" && user.kyc === "1") {
-        console.log("Found this one");
-        await User.findOneAndUpdate(
-          { _id: user._id },
-          { $set: { kyc: data.kyc_tier } },
-          { new: true }
-        );
-      }
-
-      if (data.kyc_tier === "1" && user.kyc !== "1") {
-        console.log("Found this one two");
-        await User.findOneAndUpdate(
-          { _id: user._id },
-          { $set: { kyc: "2" } },
-          { new: true }
-        );
-      }
-
-      //send Notification
-      const newNotify = new Notifications({
-        type: "Documents",
-        message:
-          data.kyc === "2"
-            ? "Documents Verified"
-            : "Documents verification failed",
-      });
-      await newNotify.save();
-      //send push notification
-      // notificationStatus = sendNotification(
-      //   "Documents",
-      //   ` ${
-      //     data.kyc_tier === "2"
-      //       ? "Documents verification successfull"
-      //       : "Documents verification failed"
-      //   }`,
-      //   user.device_id,
-      //   next
-      // );
-
-      message = `Documents ${
-        data.kyc_tier === "2" ? "Verified" : "Verification failed"
-      }`;
-    }
-
     return res.status(200).json({
       status: true,
       message: message,
+      data: returnedData,
     });
   } catch (err) {
     next(err);

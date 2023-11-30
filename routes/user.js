@@ -16,11 +16,11 @@ router.put("/updatePassword", requireAuth, userController.UpdatePassword);
 
 router.get("/getProfile", requireAuth, userController.GetProfile);
 
-router.put(
-  "/updateVerifyProfile",
-  requireAuth,
-  userController.updateVerifyProfile
-);
+// router.put(
+//   "/updateVerifyProfile",
+//   requireAuth,
+//   userController.updateVerifyProfile
+// );
 
 router.put("/updateProfile", requireAuth, userController.updateProfile);
 

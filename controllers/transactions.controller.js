@@ -12,8 +12,10 @@ const { Transaction } = require("../models/Transaction");
 exports.GetAllTransactions = async (req, res, next) => {
   try {
     const transactions = await Transaction.find();
+    if (!transactions)
+      return next(new ErrorResponse("No transactions found"), 201);
     if (transactions)
-      res.status(200).json({ status: true, data: notifications });
+      res.status(200).json({ status: true, data: transactions });
   } catch (error) {
     next(error);
   }
@@ -28,8 +30,10 @@ exports.GetAllTransactions = async (req, res, next) => {
 exports.GetTxId = async (req, res, next) => {
   try {
     const transactions = await Transaction.findById({ _id: req.params.id });
+    if (!transactions)
+      return next(new ErrorResponse("No transactions found"), 201);
     if (transactions)
-      res.status(200).json({ status: true, data: notifications });
+      res.status(200).json({ status: true, data: transactions });
   } catch (error) {
     next(error);
   }

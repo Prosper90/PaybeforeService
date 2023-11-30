@@ -4,16 +4,6 @@ const { isEmail } = require("validator");
 const bcrypt = require("bcrypt");
 const ErrorResponse = require("../utils/errorResponse");
 
-const accountSchema = mongoose.Schema({
-  issue_id: { type: String },
-  account_Name: { type: String },
-  account_Number: { type: String },
-  bank: { type: String },
-  limit: { type: String, default: null },
-  digits_after_decimal_separator: { type: Number, default: 0 },
-  isActive: { type: Boolean, default: true },
-});
-
 const BankSchema = mongoose.Schema({
   bank_Name: { type: String },
   acc_Number: { type: String },
@@ -27,6 +17,12 @@ const balanceSchema = mongoose.Schema({
 
 const linkGenerated = mongoose.Schema({
   linkID: { type: String },
+
+  issue_id: { type: String },
+  account_name: { type: String },
+  account_number: { type: String },
+  bank_name: { type: String },
+
   created: { type: Date, default: Date.now() },
   expired: { type: Date },
   amount: { type: Number },
@@ -73,7 +69,6 @@ const userSchema = mongoose.Schema(
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     gender: { type: String },
-    account: accountSchema,
     address: { type: String },
     city: { type: String },
     state: { type: String },
