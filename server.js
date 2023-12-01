@@ -4,6 +4,7 @@ const user = require("./routes/user");
 const admin = require("./routes/admin");
 const auth = require("./routes/auth");
 const payment = require("./routes/payment");
+const referral = require("./routes/referrals");
 const transaction = require("./routes/transaction");
 const webhook = require("./routes/webhook");
 const bodyParser = require("body-parser");
@@ -30,6 +31,7 @@ app.use(`${EndpointHead}/auth`, auth);
 app.use(`${EndpointHead}/payment`, payment);
 app.use(`${EndpointHead}/transaction`, transaction);
 app.use(`${EndpointHead}/user`, user);
+app.use(`${EndpointHead}/referral`, referral);
 app.use(`${EndpointHead}/admin`, admin);
 app.use(`${EndpointHead}/webhook`, webhook);
 

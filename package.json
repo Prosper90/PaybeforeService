@@ -21,6 +21,7 @@
     "mongo-connect": "^0.0.6",
     "mongoose": "^7.4.5",
     "nodemailer": "^6.9.7",
+    "socket.io": "^4.7.2",
     "twilio": "^4.10.0",
     "uuid": "^9.0.1",
     "validator": "^13.11.0",

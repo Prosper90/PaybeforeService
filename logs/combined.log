@@ -205,3 +205,14 @@
 {"level":"info","message":"GET /PayBeforeService/v1/transaction/getTx/6567e6595bbb65281aecb755","timestamp":"2023-11-30T03:15:14.772Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/transaction/getTx","timestamp":"2023-11-30T03:15:42.604Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/transaction/getTx/6567e6595bbb65281aecb755","timestamp":"2023-11-30T03:15:49.534Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/login","timestamp":"2023-12-01T12:35:07.492Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getProfile","timestamp":"2023-12-01T12:35:37.436Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getProfile","timestamp":"2023-12-01T12:37:02.045Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getProfile","timestamp":"2023-12-01T12:37:46.331Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getProfile","timestamp":"2023-12-01T12:41:48.600Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getProfile","timestamp":"2023-12-01T12:41:51.737Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getProfile","timestamp":"2023-12-01T12:43:03.798Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getProfile","timestamp":"2023-12-01T12:43:28.309Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/transaction/getRefs","timestamp":"2023-12-01T12:47:30.328Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/referral/getRefs","timestamp":"2023-12-01T12:47:43.343Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/transaction/getTx","timestamp":"2023-12-01T12:47:57.284Z"}

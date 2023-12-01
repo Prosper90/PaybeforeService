@@ -6,7 +6,7 @@ const ErrorResponse = require("../utils/errorResponse.js");
 const { User } = require("../models/Users");
 const jwt = require("jsonwebtoken");
 const { sendPasswordEmail } = require("../utils/email");
-const { Transactions } = require("../models/Transaction");
+const { Transaction } = require("../models/Transaction");
 const { generateLocalHeader } = require("../utils/genHeadersData");
 
 /*
@@ -377,7 +377,7 @@ exports.withdraw = async (req, res, next) => {
     );
 
     //We create a transaction
-    const transaction = new Transactions({
+    const transaction = new Transaction({
       "sender.wallet": req.user._id,
       amount: amount,
       currency: currency,
@@ -428,7 +428,7 @@ exports.withdraw = async (req, res, next) => {
       );
 
       //update transaction
-      await Transactions.findByIdAndUpdate(
+      await Transaction.findByIdAndUpdate(
         { _id: transaction._id },
         { $set: { status: "failed" } },
         { new: true }
@@ -452,7 +452,7 @@ exports.withdraw = async (req, res, next) => {
     );
 
     //update transaction
-    await Transactions.findByIdAndUpdate(
+    await Transaction.findByIdAndUpdate(
       { _id: transaction._id },
       { $set: { track_id: values.reference } },
       { new: true }

@@ -76,11 +76,16 @@ const userSchema = mongoose.Schema(
     date_of_birth: { type: Date },
     bank_info: BankSchema,
     userReferralID: { type: Number },
-    referringUserIDs: [{ type: mongoose.Schema.Types.ObjectId }],
+    referringUserIDs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     recent_transactions: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Transactions",
+        ref: "Transaction",
       },
     ],
   },

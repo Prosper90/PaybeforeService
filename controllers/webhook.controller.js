@@ -1,6 +1,7 @@
 const ErrorResponse = require("../utils/errorResponse");
 const { User } = require("../models/Users");
 const { Transactions } = require("../models/Transaction");
+const io = require("socket.io")();
 //const Notification = require("../models/Notification");
 // const {
 //   sendNotification,
@@ -26,14 +27,15 @@ exports.Hooks = async (req, res, next) => {
 
     //This is for creadit (like depositing into an account)
     if (event === "transaction.new" && data.drcr === "CR") {
-      console.log("data one");
       const user = await User.findOne({
         paymentLink: {
           $elemMatch: { issue_id: data.account_id },
         },
       });
+      const recieverInfo = user.paymentLink.find((dataPayment) => {
+        return dataPayment.issue_id == data.account_id;
+      });
       if (!user) return next(new ErrorResponse("No such user found", 401));
-      console.log("data two", user);
       //create a new transaction
       const transaction = new Transactions({
         type: "Deposit",
@@ -72,6 +74,19 @@ exports.Hooks = async (req, res, next) => {
         },
         { new: true }
       );
+      //Emit socket event
+      io.on("connection", (socket) => {
+        // Emit event with data
+        socket.emit(`Payment${data.account_id}`, {
+          info: `${data.amount} paid`,
+          message: `${
+            req.body.data.amount >= recieverInfo.amount
+              ? "Payment complete"
+              : "Incomplete payment"
+          }`,
+        });
+      });
+
       //send push notification
       // notificationStatus = sendNotification(
       //   "Deposit",
