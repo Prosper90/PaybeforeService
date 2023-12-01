@@ -85,6 +85,10 @@ exports.Hooks = async (req, res, next) => {
               : "Incomplete payment"
           }`,
         });
+
+        socket.on("disconnect", () => {
+          console.log("Client disconnected");
+        });
       });
 
       //send push notification

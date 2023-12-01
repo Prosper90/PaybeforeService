@@ -12,7 +12,7 @@ const { Transactions } = require("../models/Transaction");
  * @param {*} res
  * @param {*} next
  */
-exports.GetpaymentDetailsfromIDOrLink = async (req, res, next) => {
+exports.VerifypaymentDetailsfromIDOrLink = async (req, res, next) => {
   const { payment_id } = req.params;
 
   try {
@@ -45,6 +45,7 @@ exports.GetpaymentDetailsfromIDOrLink = async (req, res, next) => {
     const paymentObject = {
       clientName: user.full_name,
       amount: paymentGet.amount,
+      accountId: paymentGet.issue_id,
       accountName: paymentGet.account_name,
       accountNumber: paymentGet.account_number,
       bank: paymentGet.bank_name,

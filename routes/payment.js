@@ -7,7 +7,7 @@ const { requireAuth } = require("../middlewares/authMiddleware");
 //Payment route
 router.get(
   "/verifyPayment/:payment_id",
-  paymentController.GetpaymentDetailsfromIDOrLink
+  paymentController.VerifypaymentDetailsfromIDOrLink
 );
 router.post(
   "/generatePaymentLink",
