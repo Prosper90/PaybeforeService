@@ -78,9 +78,9 @@ exports.Hooks = async (req, res, next) => {
       io.on("connection", (socket) => {
         // Emit event with data
         socket.emit(`Payment${data.account_id}`, {
-          info: `${data.amount} paid`,
+          info: data.status,
           message: `${
-            req.body.data.amount >= recieverInfo.amount
+            data.status === "successful"
               ? "Payment complete"
               : "Incomplete payment"
           }`,
