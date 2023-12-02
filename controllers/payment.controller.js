@@ -34,16 +34,17 @@ exports.VerifypaymentDetailsfromIDOrLink = async (req, res, next) => {
       );
     //check if is completetd
     if (paymentGet.isPaid)
-      return next(new ErrorResponse("Payment is already completed.", 401));
+      return next(new ErrorResponse("Payment is already completed.", 203));
     //check if it has expired
     if (Date.now() > Date.parse(paymentGet.expired))
-      return next(new ErrorResponse("Payment is expired.", 401));
+      return next(new ErrorResponse("Payment is expired.", 203));
 
     // account_number: values.account_number,
     // bank_name: values.bank_name,
     // account_name: values.name,
     const paymentObject = {
       clientName: user.full_name,
+      payId: paymentGet.linkID,
       amount: paymentGet.amount,
       accountId: paymentGet.issue_id,
       accountName: paymentGet.account_name,

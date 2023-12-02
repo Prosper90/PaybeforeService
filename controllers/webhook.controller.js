@@ -1,6 +1,6 @@
 const ErrorResponse = require("../utils/errorResponse");
 const { User } = require("../models/Users");
-const { Transactions } = require("../models/Transaction");
+const { Transaction } = require("../models/Transaction");
 const io = require("socket.io")();
 //const Notification = require("../models/Notification");
 // const {
@@ -37,7 +37,7 @@ exports.Hooks = async (req, res, next) => {
       });
       if (!user) return next(new ErrorResponse("No such user found", 401));
       //create a new transaction
-      const transaction = new Transactions({
+      const transaction = new Transaction({
         type: "Deposit",
         "sender.bank": {
           beneficiary_bank_name: data.meta_data.sender_bank_name,
@@ -85,6 +85,7 @@ exports.Hooks = async (req, res, next) => {
               : "Incomplete payment"
           }`,
         });
+        console.log("socket emitted");
 
         socket.on("disconnect", () => {
           console.log("Client disconnected");
@@ -113,7 +114,7 @@ exports.Hooks = async (req, res, next) => {
       if (!user) return next(new ErrorResponse("No such user found", 401));
 
       //update created transaction
-      await Transactions.findByIdAndUpdate(
+      await Transaction.findByIdAndUpdate(
         { track_id: data.reference },
         {
           $set: {

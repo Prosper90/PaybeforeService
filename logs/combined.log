@@ -216,3 +216,9 @@
 {"level":"info","message":"GET /PayBeforeService/v1/transaction/getRefs","timestamp":"2023-12-01T12:47:30.328Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/referral/getRefs","timestamp":"2023-12-01T12:47:43.343Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/transaction/getTx","timestamp":"2023-12-01T12:47:57.284Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/webhook/Handle","timestamp":"2023-12-02T14:52:05.592Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/webhook/Handle","timestamp":"2023-12-02T14:53:04.759Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/webhook/Handle","timestamp":"2023-12-02T14:54:23.718Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/webhook/Handle","timestamp":"2023-12-02T14:57:33.516Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/webhook/Handle","timestamp":"2023-12-02T15:30:51.469Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/payment/verifyPayment/CBZFUY","timestamp":"2023-12-02T15:41:02.749Z"}
