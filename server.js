@@ -65,8 +65,6 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
   try {
     const { event, data } = req.body;
-    let message;
-    let returnedData;
 
     //This is for creadit (like depositing into an account)
     if (event === "transaction.new" && data.drcr === "CR") {
@@ -75,9 +73,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           $elemMatch: { issue_id: data.account_id },
         },
       });
-      const recieverInfo = user.paymentLink.find((dataPayment) => {
-        return dataPayment.issue_id == data.account_id;
-      });
+
       if (!user) return next(new ErrorResponse("No such user found", 401));
       //create a new transaction
       const transaction = new Transaction({
@@ -144,10 +140,15 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       //   next
       // );
 
-      returnedData = redeemCode; //user.paymentLink.find( (one) => one.issue_id === data.account_id).redeemCode,
-      message = `Deposit ${
+      const returnedData = redeemCode; //user.paymentLink.find( (one) => one.issue_id === data.account_id).redeemCode,
+      const message = `Deposit ${
         data.status === "successful" ? "successful" : "failed"
       }`;
+      return res.status(200).json({
+        status: true,
+        message: message,
+        data: returnedData,
+      });
     }
 
     //This is for debit, (like withdrawals)
@@ -178,16 +179,14 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       //     next
       //   );
 
-      message = `Withdrawaal ${
+      const message = `Withdrawaal ${
         data.status === "successful" ? "successful" : "failed"
       }`;
+      return res.status(200).json({
+        status: true,
+        message: message,
+      });
     }
-
-    return res.status(200).json({
-      status: true,
-      message: message,
-      data: returnedData,
-    });
   } catch (err) {
     next(err);
   }

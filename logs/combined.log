@@ -245,3 +245,6 @@
 {"level":"info","message":"POST /PayBeforeService/v1/payment/generatePaymentLink","timestamp":"2023-12-02T19:13:55.928Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-02T19:14:41.148Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-02T19:48:13.699Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-02T20:20:23.325Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-02T20:20:50.094Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-02T20:21:26.406Z"}
