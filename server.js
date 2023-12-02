@@ -119,7 +119,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         console.log("Client connected");
 
         // Emit event with data
-        socket.broadcast.emit(`Payment${data.account_id}`, {
+        socket.broadcast.emit(`Pay`, {
           infoR: redeemCode,
           message: `${
             data.status === "successful"
