@@ -114,18 +114,20 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         { new: true }
       );
       //Emit socket event
+      //Emit socket event
       io.on("connection", (socket) => {
-        console.log("in here sooo ");
+        console.log("Client connected");
+
         // Emit event with data
         socket.broadcast.emit(`Payment${data.account_id}`, {
-          info: data.status,
+          infoR: redeemCode,
           message: `${
             data.status === "successful"
               ? "Payment complete"
               : "Incomplete payment"
           }`,
         });
-        console.log("socket emitted");
+        console.log("Socket event emitted");
 
         socket.on("disconnect", () => {
           console.log("Client disconnected");
@@ -155,7 +157,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
     if (event === "transaction.new" && data.drcr === "DR") {
       //flow here is to find tx, by track_id the get the user id and from there get the user
       const tx = await User.findOne({ track_id: data.reference });
-      const user = await User.findOne({ _id: tx.sender.wallet });
+      const user = await User.findOne({ _id: tx?.sender.wallet });
       if (!user) return next(new ErrorResponse("No such user found", 401));
 
       //update created transaction
