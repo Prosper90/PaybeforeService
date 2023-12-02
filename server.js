@@ -121,7 +121,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       io.on("connection", (socket) => {
         console.log("in here sooo ");
         // Emit event with data
-        socket.emit(`Payment${data.account_id}`, {
+        socket.broadcast.emit(`Payment${data.account_id}`, {
           info: data.status,
           message: `${
             data.status === "successful"

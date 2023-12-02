@@ -130,9 +130,12 @@ exports.GeneratePaymentLink = async (req, res, next) => {
     //create a transaction
 
     if (paymentGenerated)
-      res
-        .status(200)
-        .json({ status: true, data: newPayment.linkID, link: link });
+      res.status(200).json({
+        status: true,
+        data: newPayment.linkID,
+        link: link,
+        values: values,
+      });
   } catch (error) {
     next(error);
   }
@@ -213,24 +216,33 @@ exports.MakePaymentToLink = async (req, res, next) => {
   //Logic is
   //check that link is not expired
   //make payment to wallet, update paymentLink and store reedem code there.
-  const { payment_id, account_id } = req.body;
+  const { payment_id } = req.body;
 
   try {
-    const userPayment = await User.findOne({
-      paymentLink: { $elemMatch: { linkID: payment_id } },
-    });
+    const userPayment = await User.findOne(
+      { "paymentLink.linkID": payment_id },
+      { "paymentLink.$": 1 }
+    );
+
     if (!userPayment) return new ErrorResponse("Id does not exist", 400);
     const apiUrl = `${process.env.LOCAL_BASE}/v1/accounts/credit/manual`;
 
     const requestData = {
-      amount:
-        userPayment.paymentLink.find((one) => one.linkID === payment_id)
-          .amount * 100, //sample 1000
-      account_id: account_id, //sample USD
+      amount: userPayment.paymentLink[0].amount * 100, //sample 1000
+      account_id: userPayment.paymentLink[0].issue_id, //sample id
     };
+    console.log(requestData, "request Data");
     // Define the request headers and data
-    const headers = generateLocalHeader();
-    const response = await makecall(apiUrl, requestData, headers, "post", next);
+    const headersLocal = generateLocalHeader(next);
+    console.log(headersLocal, "headers checker");
+    const response = await makecall(
+      apiUrl,
+      requestData,
+      headersLocal,
+      "post",
+      next
+    );
+    console.log(response, "here oooo");
     if (!response?.success)
       return next(new ErrorResponse(response.message, 401));
 
