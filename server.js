@@ -115,23 +115,33 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       );
       //Emit socket event
       //Emit socket event
-      io.on("connection", (socket) => {
-        console.log("Client connected");
+      // io.on("connection", (socket) => {
+      //   console.log("Client connected");
 
-        // Emit event with data
-        socket.broadcast.emit(`Pay`, {
-          infoR: redeemCode,
-          message: `${
-            data.status === "successful"
-              ? "Payment complete"
-              : "Incomplete payment"
-          }`,
-        });
-        console.log("Socket event emitted");
+      //   // Emit event with data
+      //   socket.broadcast.emit(`Pay`, {
+      //     infoR: redeemCode,
+      //     message: `${
+      //       data.status === "successful"
+      //         ? "Payment complete"
+      //         : "Incomplete payment"
+      //     }`,
+      //   });
+      //   console.log("Socket event emitted");
 
-        socket.on("disconnect", () => {
-          console.log("Client disconnected");
-        });
+      //   socket.on("disconnect", () => {
+      //     console.log("Client disconnected");
+      //   });
+      // });
+      // Emit event with data
+      io.emit(`Pay${data.account_id}`, {
+        status: data.status,
+        infoR: redeemCode,
+        message: `${
+          data.status === "successful"
+            ? "Payment complete"
+            : "Incomplete payment"
+        }`,
       });
 
       //send push notification
