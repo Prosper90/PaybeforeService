@@ -100,7 +100,7 @@ exports.GeneratePaymentLink = async (req, res, next) => {
   }
   const values = responseLocal.data;
 
-  const appendId = generateRandomAlphaNumeric(6);
+  const appendId = generateRandomAlphaNumeric(8);
   const base = `${req.protocol}://${req.hostname}`;
   const link = `${base}/${appendId}`;
   const Expire = Date.now() + 48 * 3600 * 1000; // Current timestamp + 300 seconds (5 minutes)
@@ -118,11 +118,25 @@ exports.GeneratePaymentLink = async (req, res, next) => {
       user: req.user._id,
     };
 
+    //update user, transaction and notifications, and even visitor
+    const tx = new Transactions({
+      type: "Payment",
+      payment: {
+        linkID: appendId,
+        expired: Expire,
+        amount: amount,
+        status: "pending",
+        reciever: req.user._id,
+      },
+      track_id: appendId,
+    });
+
     const paymentGenerated = await User.findOneAndUpdate(
       req.user._id,
       {
         $push: {
           paymentLink: newPayment,
+          recent_transactions: tx._id,
         },
       },
       { new: true }
@@ -173,7 +187,7 @@ exports.ReedemPayment = async (req, res, next) => {
     const updatedChecker = await User.findOneAndUpdate(
       { _id: req.user._id, "paymentLink.redeemCode": redeemCode },
       {
-        $set: { "paymentLink.$.status": "Reedemed" },
+        $set: { "paymentLink.$.status": "Redeemed" },
         $inc: {
           "balances.pending_wallet": -codeChecker.amount,
           "balances.main_wallet": codeChecker.amount,
@@ -182,14 +196,12 @@ exports.ReedemPayment = async (req, res, next) => {
       { new: true }
     );
 
-    //update user, transaction and notifications, and even visitor
-    let tx = new Transactions({
-      type: "Redeem",
-      amount: codeChecker.amount,
-      currency: "NGN",
-      status: "success",
-      track_id: codeChecker.linkID,
-    });
+    await Transactions.findOneAndUpdate(
+      { "payment.linkID": codeChecker.linkID },
+      {
+        $set: { "payment.isRedeemed": true },
+      }
+    );
 
     const settledObject = {
       id: codeChecker.linkID,
@@ -216,7 +228,7 @@ exports.MakePaymentToLink = async (req, res, next) => {
   //Logic is
   //check that link is not expired
   //make payment to wallet, update paymentLink and store reedem code there.
-  const { payment_id } = req.body;
+  const { payment_id, amount } = req.body;
 
   try {
     const userPayment = await User.findOne(
@@ -228,13 +240,12 @@ exports.MakePaymentToLink = async (req, res, next) => {
     const apiUrl = `${process.env.LOCAL_BASE}/v1/accounts/credit/manual`;
 
     const requestData = {
-      amount: userPayment.paymentLink[0].amount * 100, //sample 1000
+      amount: amount * 100, //sample 1000
       account_id: userPayment.paymentLink[0].issue_id, //sample id
     };
     console.log(requestData, "request Data");
     // Define the request headers and data
     const headersLocal = generateLocalHeader(next);
-    console.log(headersLocal, "headers checker");
     const response = await makecall(
       apiUrl,
       requestData,

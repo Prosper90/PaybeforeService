@@ -378,18 +378,19 @@ exports.withdraw = async (req, res, next) => {
 
     //We create a transaction
     const transaction = new Transaction({
-      "sender.wallet": req.user._id,
-      amount: amount,
-      currency: currency,
-      "reciever.bank": {
-        beneficiary_name: account_name,
-        bank_Name: bank_name,
-        account_number: account_number,
+      type: "withdrawal",
+      withdrawal: {
+        amount: amount,
+        sender: req.user._id,
+        reciever: {
+          beneficiary_name: account_name,
+          beneficiary_account: account_number,
+          beneficiary_bank_name: bank_name,
+          beneficiary_bank_code: bank_code,
+        },
+        status: "pending",
+        description: description,
       },
-      type: "Bank Transfer Local",
-      duplicate_id: duplicate_id,
-      description: description,
-      status: "pending",
     });
 
     await transaction.save();

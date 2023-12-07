@@ -8,30 +8,31 @@ const bankSchema = mongoose.Schema({
   beneficiary_bank_code: { type: String },
 });
 
+const PaymentSchema = mongoose.Schema({
+  linkID: { type: String },
+  created: { type: Date, default: Date.now() },
+  expired: { type: Date },
+  amount: { type: Number },
+  isPaid: { type: Boolean, default: false },
+  isRedeemed: { type: Boolean, default: false },
+  status: { type: String }, // there is redeemed, pending and cancelled
+  sender: bankSchema,
+  reciever: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+});
+
+const WithdrawalSchema = mongoose.Schema({
+  amount: { type: Number },
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  reciever: bankSchema,
+  description: { type: String },
+  status: { type: String },
+});
+
 const transactionSchema = mongoose.Schema(
   {
-    type: {
-      type: String,
-    },
-    sender: {
-      bank: bankSchema,
-      wallet: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    },
-    amount: {
-      type: Number,
-      required: [true, "amount data must be filled"],
-      default: "0",
-    },
-    currency: {
-      type: String,
-      required: [true, "currency data must be filled"],
-      default: "NGN",
-    },
-    reciever: {
-      bank: bankSchema,
-      wallet: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    },
-    status: { type: String },
+    type: { type: String },
+    payment: PaymentSchema,
+    withdrawal: WithdrawalSchema,
     track_id: { type: String },
   },
   { timestamps: true }

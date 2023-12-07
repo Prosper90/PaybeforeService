@@ -68,28 +68,18 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
     //This is for creadit (like depositing into an account)
     if (event === "transaction.new" && data.drcr === "CR") {
-      const user = await User.findOne({
-        paymentLink: {
-          $elemMatch: { issue_id: data.account_id },
+      const user = await User.findOne(
+        {
+          paymentLink: {
+            $elemMatch: { issue_id: data.account_id },
+          },
         },
-      });
+        { "paymentLink.$": 1 }
+      );
+
+      //return res.status(200).json({ data: user });
 
       if (!user) return next(new ErrorResponse("No such user found", 401));
-      //create a new transaction
-      const transaction = new Transaction({
-        type: "Deposit",
-        "sender.bank": {
-          beneficiary_bank_name: data.meta_data.sender_bank_name,
-          beneficiary_name: data.meta_data.sender_account_name,
-        },
-        amount: req.body.data.amount,
-        currency: req.body.data.currency,
-        "reciever.wallet": user._id,
-        status: "success",
-        track_id: data.reference,
-      });
-
-      transaction.save();
 
       const redeemCode = crypto.randomInt(100000, 1000000);
 
@@ -109,31 +99,28 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
             "paymentLink.$.isPaid": true,
             "paymentLink.$.redeemCode": redeemCode,
           },
-          $push: { recent_transactions: transaction._id },
         },
         { new: true }
       );
-      //Emit socket event
-      //Emit socket event
-      // io.on("connection", (socket) => {
-      //   console.log("Client connected");
 
-      //   // Emit event with data
-      //   socket.broadcast.emit(`Pay`, {
-      //     infoR: redeemCode,
-      //     message: `${
-      //       data.status === "successful"
-      //         ? "Payment complete"
-      //         : "Incomplete payment"
-      //     }`,
-      //   });
-      //   console.log("Socket event emitted");
+      //update transaction
+      await Transaction.findOneAndUpdate(
+        { track_id: user.paymentLink[0].linkID },
+        {
+          $set: {
+            "payment.status":
+              data.status === "successful" ? "success" : "failed",
+            "payment.isPaid": data.status === "successful" ? true : false,
+            "payment.sender": {
+              beneficiary_bank_name: data.meta_data.sender_bank_name,
+              beneficiary_name: data.meta_data.sender_account_name,
+            },
+          },
+        },
+        { new: true }
+      );
 
-      //   socket.on("disconnect", () => {
-      //     console.log("Client disconnected");
-      //   });
-      // });
-      // Emit event with data
+      // Emit socket event with data
       io.emit(`Pay${data.account_id}`, {
         status: data.status,
         infoR: redeemCode,
@@ -166,16 +153,17 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
     //This is for debit, (like withdrawals)
     if (event === "transaction.new" && data.drcr === "DR") {
       //flow here is to find tx, by track_id the get the user id and from there get the user
-      const tx = await User.findOne({ track_id: data.reference });
-      const user = await User.findOne({ _id: tx?.sender.wallet });
-      if (!user) return next(new ErrorResponse("No such user found", 401));
+      const tx = await Transaction.findOne({ track_id: data.reference });
+      // const user = await User.findOne({ _id: tx?.sender.wallet });
+      // if (!user) return next(new ErrorResponse("No such user found", 401));
 
       //update created transaction
-      await Transaction.findByIdAndUpdate(
+      await Transaction.findOneAndUpdate(
         { track_id: data.reference },
         {
           $set: {
-            status: data.status === "successful" ? "success" : "failed",
+            "withdrawal.status":
+              data.status === "successful" ? "success" : "failed",
           },
         },
         { new: true }
