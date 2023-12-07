@@ -131,6 +131,7 @@ exports.GeneratePaymentLink = async (req, res, next) => {
       track_id: appendId,
     });
 
+    tx = await tx.save();
     const paymentGenerated = await User.findOneAndUpdate(
       req.user._id,
       {
