@@ -100,7 +100,7 @@ exports.GeneratePaymentLink = async (req, res, next) => {
   }
   const values = responseLocal.data;
 
-  const appendId = generateRandomAlphaNumeric(8);
+  const appendId = generateRandomAlphaNumeric(6);
   const base = `${req.protocol}://${req.hostname}`;
   const link = `${base}/${appendId}`;
   const Expire = Date.now() + 48 * 3600 * 1000; // Current timestamp + 300 seconds (5 minutes)
@@ -131,7 +131,8 @@ exports.GeneratePaymentLink = async (req, res, next) => {
       track_id: appendId,
     });
 
-    tx = await tx.save();
+    await tx.save();
+
     const paymentGenerated = await User.findOneAndUpdate(
       req.user._id,
       {
