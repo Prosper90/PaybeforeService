@@ -4,7 +4,7 @@ const ErrorResponse = require("../utils/errorResponse.js");
 const { User } = require("../models/Users");
 const { generateRandomAlphaNumeric } = require("../utils/createTokens");
 const { generateLocalHeader } = require("../utils/genHeadersData");
-const { Transactions } = require("../models/Transaction");
+const { Transaction } = require("../models/Transaction");
 
 /**
  * Get a payment link detail or details
@@ -119,7 +119,7 @@ exports.GeneratePaymentLink = async (req, res, next) => {
     };
 
     //update user, transaction and notifications, and even visitor
-    const tx = new Transactions({
+    const tx = new Transaction({
       type: "Payment",
       payment: {
         linkID: appendId,
@@ -196,7 +196,7 @@ exports.ReedemPayment = async (req, res, next) => {
       { new: true }
     );
 
-    await Transactions.findOneAndUpdate(
+    await Transaction.findOneAndUpdate(
       { "payment.linkID": codeChecker.linkID },
       {
         $set: { "payment.isRedeemed": true },
