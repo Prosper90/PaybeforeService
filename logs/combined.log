@@ -276,3 +276,10 @@
 {"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-07T12:30:14.478Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-07T12:30:43.688Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-07T12:35:34.857Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/generatePaymentLink","timestamp":"2023-12-07T12:41:26.572Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-07T12:44:09.354Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-07T19:39:04.351Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/redeemPayment","timestamp":"2023-12-09T15:20:58.321Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/redeemPayment","timestamp":"2023-12-09T15:25:23.166Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/redeemPayment","timestamp":"2023-12-09T15:25:53.822Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/redeemPayment","timestamp":"2023-12-09T15:27:39.348Z"}

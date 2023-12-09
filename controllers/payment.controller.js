@@ -176,15 +176,14 @@ exports.ReedemPayment = async (req, res, next) => {
         },
       }
     );
-
-    if (!check) return next(new ErrorResponse("no such payment", 401));
+    if (check.paymentLink.length === 0)
+      return next(new ErrorResponse("No such payment", 401));
 
     const codeChecker = req.user.paymentLink.find(
       (gotten) => gotten.redeemCode === redeemCode
     );
-
     if (!codeChecker.isPaid)
-      return next(new ErrorResponse("This Link has no payment attached", 401));
+      return next(new ErrorResponse("This Tx has not been paid for", 401));
 
     const updatedChecker = await User.findOneAndUpdate(
       { _id: req.user._id, "paymentLink.redeemCode": redeemCode },
