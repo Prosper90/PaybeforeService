@@ -1,7 +1,7 @@
 require("dotenv").config();
 const ErrorResponse = require("../utils/errorResponse.js");
-const { Transaction } = require("../models/Transaction");
 const { User } = require("../models/Users.js");
+const { Bonus } = require("../models/Bonus.js");
 
 /**
  * this is to get all referrals for user
@@ -9,9 +9,9 @@ const { User } = require("../models/Users.js");
  */
 exports.GetAllRefs = async (req, res, next) => {
   try {
-    const refs = await User.findById(req.user.id).populate("referringUserIDs");
+    const refs = await Bonus.find({ owner: req.user._id });
     if (!refs) return next(new ErrorResponse("No ref found"), 201);
-    res.status(200).json({ status: true, data: refs.referringUserIDs });
+    res.status(200).json({ status: true, data: refs });
   } catch (error) {
     next(error);
   }
@@ -25,10 +25,7 @@ exports.GetAllRefs = async (req, res, next) => {
  */
 exports.GetRefId = async (req, res, next) => {
   try {
-    const particularRef = await User.findById(
-      { _id: req.user.id, "referringUserIDs._id": req.params.user },
-      { "referringUserIDs.$": 1 }
-    ).populate("referringUserIDs");
+    const particularRef = await Bonus.findById({ _id: req.params.id });
     if (!particularRef) return next(new ErrorResponse("No ref found"), 201);
 
     res.status(200).json({ status: true, data: particularRef });

@@ -120,6 +120,9 @@ exports.CreateAccount = async (req, res, next) => {
     const hashedpassword = await bcrypt.hash(password, salt);
     const refID = crypto.randomInt(100000, 1000000);
 
+    //console.log(req.query, "await async");
+    // return res.status(200).json({ data: req.query });
+
     const user = await User.findOneAndUpdate(
       { _id: userCheck },
       {
@@ -134,6 +137,7 @@ exports.CreateAccount = async (req, res, next) => {
           },
           country: "NG",
           password: hashedpassword,
+          referer: req.query.ref,
           userReferralID: refID,
           date_of_birth: date_of_birth,
         },
@@ -141,7 +145,7 @@ exports.CreateAccount = async (req, res, next) => {
       { new: true }
     );
 
-    //adding to user referrer
+    //adding the registered to the referer
     const findRef = await User.findOne({ userReferralID: req.query.ref });
     if (findRef) {
       await User.findOneAndUpdate(

@@ -5,6 +5,7 @@ const { User } = require("../models/Users");
 const { generateRandomAlphaNumeric } = require("../utils/createTokens");
 const { generateLocalHeader } = require("../utils/genHeadersData");
 const { Transaction } = require("../models/Transaction");
+const { Bonus } = require("../models/Bonus.js");
 
 /**
  * Get a payment link detail or details
@@ -203,6 +204,20 @@ exports.ReedemPayment = async (req, res, next) => {
         $set: { "payment.isRedeemed": true },
       }
     );
+
+    if (req.user.referer) {
+      const findReferer = await User.findOne({
+        userReferralID: req.user.referer,
+      });
+      const bonus = new Bonus({
+        type: "Referral Bonus",
+        status: "success",
+        amount: (3 * codeChecker.amount) / 100,
+        owner: findReferer._id,
+      });
+
+      await bonus.save();
+    }
 
     const settledObject = {
       id: codeChecker.linkID,

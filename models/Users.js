@@ -75,6 +75,7 @@ const userSchema = mongoose.Schema(
     country: { type: String },
     date_of_birth: { type: Date },
     bank_info: BankSchema,
+    referer: { type: Number },
     userReferralID: { type: Number },
     referringUserIDs: [
       {
