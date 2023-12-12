@@ -129,6 +129,7 @@ exports.GeneratePaymentLink = async (req, res, next) => {
         status: "pending",
         reciever: req.user._id,
       },
+      owner: req.user._id,
       track_id: appendId,
     });
 

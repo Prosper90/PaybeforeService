@@ -8,7 +8,7 @@ const { Transaction } = require("../models/Transaction");
  */
 exports.GetAllTransactions = async (req, res, next) => {
   try {
-    const transactions = await Transaction.find();
+    const transactions = await Transaction.find({ owner: req.user._id });
     if (!transactions)
       return next(new ErrorResponse("No transactions found"), 201);
     if (transactions)

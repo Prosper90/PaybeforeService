@@ -25,6 +25,7 @@ const WithdrawalSchema = mongoose.Schema({
   sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   reciever: bankSchema,
   description: { type: String },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   status: { type: String },
 });
 
