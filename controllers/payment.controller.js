@@ -209,6 +209,18 @@ exports.ReedemPayment = async (req, res, next) => {
       const findReferer = await User.findOne({
         userReferralID: req.user.referer,
       });
+
+      await User.findOneAndUpdate(
+        { _id: findReferer._id },
+        {
+          $inc: {
+            "balances.refferal_wallet": (3 * codeChecker.amount) / 100,
+            "balances.main_wallet": (3 * codeChecker.amount) / 100,
+          },
+        },
+        { new: true }
+      );
+
       const bonus = new Bonus({
         type: "Referral Bonus",
         status: "success",
