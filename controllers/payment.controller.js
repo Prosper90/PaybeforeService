@@ -176,15 +176,18 @@ exports.ReedemPayment = async (req, res, next) => {
         paymentLink: {
           $elemMatch: { redeemCode: redeemCode },
         },
-      }
+      },
+      { "paymentLink.$": 1 }
     );
-    if (check.paymentLink.length === 0)
+
+    //return res.status(200).json({ data: check });
+    if (check.paymentLink[0].length === 0)
       return next(new ErrorResponse("No such payment", 401));
 
-    const codeChecker = req.user.paymentLink.find(
-      (gotten) => gotten.redeemCode === redeemCode
-    );
-    if (!codeChecker.isPaid)
+    // const codeChecker = req.user.paymentLink.find(
+    //   (gotten) => gotten.redeemCode === redeemCode
+    // );
+    if (!check.paymentLink[0].isPaid)
       return next(new ErrorResponse("This Tx has not been paid for", 401));
 
     const updatedChecker = await User.findOneAndUpdate(
@@ -192,15 +195,15 @@ exports.ReedemPayment = async (req, res, next) => {
       {
         $set: { "paymentLink.$.status": "Redeemed" },
         $inc: {
-          "balances.pending_wallet": -codeChecker.amount,
-          "balances.main_wallet": codeChecker.amount,
+          "balances.pending_wallet": -check.paymentLink[0].amount,
+          "balances.main_wallet": check.paymentLink[0].amount,
         },
       },
       { new: true }
     );
 
     await Transaction.findOneAndUpdate(
-      { "payment.linkID": codeChecker.linkID },
+      { "payment.linkID": check.paymentLink[0].linkID },
       {
         $set: { "payment.isRedeemed": true },
       }
@@ -215,8 +218,8 @@ exports.ReedemPayment = async (req, res, next) => {
         { _id: findReferer._id },
         {
           $inc: {
-            "balances.refferal_wallet": (3 * codeChecker.amount) / 100,
-            "balances.main_wallet": (3 * codeChecker.amount) / 100,
+            "balances.refferal_wallet": (3 * check.paymentLink[0].amount) / 100,
+            "balances.main_wallet": (3 * check.paymentLink[0].amount) / 100,
           },
         },
         { new: true }
@@ -225,7 +228,7 @@ exports.ReedemPayment = async (req, res, next) => {
       const bonus = new Bonus({
         type: "Referral Bonus",
         status: "success",
-        amount: (3 * codeChecker.amount) / 100,
+        amount: (3 * check.paymentLink[0].amount) / 100,
         owner: findReferer._id,
       });
 
@@ -233,12 +236,12 @@ exports.ReedemPayment = async (req, res, next) => {
     }
 
     const settledObject = {
-      id: codeChecker.linkID,
-      amount: codeChecker.amount,
+      id: check.paymentLink[0].linkID,
+      amount: check.paymentLink[0].amount,
       status: updatedChecker.paymentLink.find(
         (gotten) => gotten.redeemCode === redeemCode
       ).status,
-      paid: codeChecker.isPaid,
+      paid: check.paymentLink[0].isPaid,
     };
 
     return res.status(200).json({ status: true, data: settledObject });

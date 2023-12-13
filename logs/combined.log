@@ -311,3 +311,12 @@
 {"level":"info","message":"GET /PayBeforeService/v1/referral/getRefs","timestamp":"2023-12-11T20:36:04.752Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/referral/getRefs/657770c7e965971a5024054c","timestamp":"2023-12-11T20:36:46.639Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/referral/getRefs/657770c7e965971a5024054c","timestamp":"2023-12-11T20:38:02.625Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-12T18:12:02.558Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-12T18:13:05.557Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/payToLink","timestamp":"2023-12-12T18:13:10.663Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/login","timestamp":"2023-12-13T15:07:34.905Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/login","timestamp":"2023-12-13T15:08:52.893Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/redeemPayment","timestamp":"2023-12-13T15:09:22.251Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/redeemPayment","timestamp":"2023-12-13T15:20:10.612Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/redeemPayment","timestamp":"2023-12-13T15:21:19.069Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/redeemPayment","timestamp":"2023-12-13T15:23:18.558Z"}
