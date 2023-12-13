@@ -25,7 +25,6 @@ const WithdrawalSchema = mongoose.Schema({
   sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   reciever: bankSchema,
   description: { type: String },
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   status: { type: String },
 });
 
@@ -34,6 +33,7 @@ const transactionSchema = mongoose.Schema(
     type: { type: String },
     payment: PaymentSchema,
     withdrawal: WithdrawalSchema,
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     track_id: { type: String },
   },
   { timestamps: true }
