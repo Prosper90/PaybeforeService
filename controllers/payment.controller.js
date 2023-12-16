@@ -79,7 +79,7 @@ exports.GeneratePaymentLink = async (req, res, next) => {
 
   // Create a customer on third party request body
   const RequestData = {
-    preferred_bank: "Wema",
+    preferred_bank: "Sterling",
     alias: req.user.first_name,
     collection_rules: {
       frequency: 1,

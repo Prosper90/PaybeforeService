@@ -8,11 +8,41 @@ const { Transaction } = require("../models/Transaction");
  */
 exports.GetAllTransactions = async (req, res, next) => {
   try {
-    const transactions = await Transaction.find({ owner: req.user._id });
-    if (!transactions)
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const totalDocuments = await Transaction.countDocuments({
+      owner: req.user._id,
+    });
+
+    const transactions = await Transaction.find({ owner: req.user._id })
+      .skip(startIndex)
+      .limit(limit);
+
+    if (!transactions || transactions.length === 0) {
       return next(new ErrorResponse("No transactions found"), 201);
-    if (transactions)
-      res.status(200).json({ status: true, data: transactions });
+    }
+
+    const pagination = {};
+
+    if (endIndex < totalDocuments) {
+      pagination.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+
+    if (startIndex > 0) {
+      pagination.prev = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+
+    res.status(200).json({ status: true, data: transactions, pagination });
   } catch (error) {
     next(error);
   }
