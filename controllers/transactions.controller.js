@@ -22,7 +22,7 @@ exports.GetAllTransactions = async (req, res, next) => {
       .skip(startIndex)
       .limit(limit);
 
-    if (!transactions || transactions.length === 0) {
+    if (!transactions) {
       return next(new ErrorResponse("No transactions found"), 201);
     }
 

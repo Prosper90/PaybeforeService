@@ -23,7 +23,7 @@ exports.GetAllRefs = async (req, res, next) => {
       .skip(startIndex)
       .limit(limit);
 
-    if (!refs || refs.length === 0) {
+    if (!refs) {
       return next(new ErrorResponse("No transactions found"), 201);
     }
     const pagination = {};
