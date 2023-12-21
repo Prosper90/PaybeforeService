@@ -11,7 +11,7 @@ exports.GetAllRefs = async (req, res, next) => {
   try {
     // Pagination
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 6;
+    const limit = parseInt(req.query.limit) || 4;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
