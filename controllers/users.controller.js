@@ -400,14 +400,14 @@ exports.withdraw = async (req, res, next) => {
         amount: amount,
         sender: req.user._id,
         reciever: {
-          beneficiary_name: account_name,
-          beneficiary_account: account_number,
-          beneficiary_bank_name: bank_name,
-          beneficiary_bank_code: bank_code,
+          account_name: account_name,
+          account_number: account_number,
+          // beneficiary_bank_name: bank_name,
+          // beneficiary_bank_code: bank_code,
         },
-        status: "pending",
         description: description,
       },
+      status: "pending",
     });
 
     await transaction.save();

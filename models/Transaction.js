@@ -15,7 +15,6 @@ const PaymentSchema = mongoose.Schema({
   amount: { type: Number },
   isPaid: { type: Boolean, default: false },
   isRedeemed: { type: Boolean, default: false },
-  status: { type: String }, // there is redeemed, pending and cancelled
   sender: bankSchema,
   reciever: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
@@ -35,6 +34,7 @@ const transactionSchema = mongoose.Schema(
     withdrawal: WithdrawalSchema,
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     track_id: { type: String },
+    status: { type: String }, // there is redeemed, pending and cancelled
   },
   { timestamps: true }
 );

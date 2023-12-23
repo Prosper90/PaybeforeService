@@ -126,10 +126,10 @@ exports.GeneratePaymentLink = async (req, res, next) => {
         linkID: appendId,
         expired: Expire,
         amount: amount,
-        status: "pending",
         reciever: req.user._id,
       },
       owner: req.user._id,
+      status: "pending",
       track_id: appendId,
     });
 

@@ -110,8 +110,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         { track_id: user.paymentLink[0].linkID },
         {
           $set: {
-            "payment.status":
-              data.status === "successful" ? "success" : "failed",
+            status: data.status === "successful" ? "success" : "failed",
             "payment.isPaid": data.status === "successful" ? true : false,
             "payment.sender": {
               account_name: data.meta_data.sender_bank_name,
@@ -126,16 +125,16 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       io.emit(`Pay${data.account_id}`, {
         type: "Payment",
         payment: {
-          created: data.created_at,
           sender: {
             account_number: data.meta_data.sender_account_number,
             account_name: data.meta_data.sender_account_name,
           },
           amount: data.amount / 100,
-          status: data.status,
         },
+        status: data.status === "successful" ? "success" : "failed",
         infoR: redeemCode,
         id: data.reference,
+        createdAt: data.created_at,
         // message: `${
         //   data.status === "successful"
         //     ? "Payment complete"
@@ -165,7 +164,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
     //This is for debit, (like withdrawals)
     if (event === "transaction.new" && data.drcr === "DR") {
       //flow here is to find tx, by track_id the get the user id and from there get the user
-      const tx = await Transaction.findOne({ track_id: data.reference });
+      // const tx = await Transaction.findOne({ track_id: data.reference });
       // const user = await User.findOne({ _id: tx?.sender.wallet });
       // if (!user) return next(new ErrorResponse("No such user found", 401));
 
@@ -174,8 +173,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         { track_id: data.reference },
         {
           $set: {
-            "withdrawal.status":
-              data.status === "successful" ? "success" : "failed",
+            status: data.status === "successful" ? "success" : "failed",
           },
         },
         { new: true }
