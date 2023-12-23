@@ -113,8 +113,8 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
             status: data.status === "successful" ? "success" : "failed",
             "payment.isPaid": data.status === "successful" ? true : false,
             "payment.sender": {
-              account_name: data.meta_data.sender_bank_name,
-              account_number: data.meta_data.sender_account_name,
+              account_name: data.meta_data.sender_account_name,
+              account_number: data.meta_data.sender_account_number,
             },
           },
         },
