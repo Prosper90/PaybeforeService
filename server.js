@@ -6,6 +6,7 @@ const auth = require("./routes/auth");
 const payment = require("./routes/payment");
 const referral = require("./routes/referrals");
 const transaction = require("./routes/transaction");
+const bene = require("./routes/beneficiaries");
 const webhook = require("./routes/webhook");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -49,6 +50,7 @@ app.use(`${EndpointHead}/payment`, payment);
 app.use(`${EndpointHead}/transaction`, transaction);
 app.use(`${EndpointHead}/user`, user);
 app.use(`${EndpointHead}/referral`, referral);
+app.use(`${EndpointHead}/bene`, bene);
 app.use(`${EndpointHead}/admin`, admin);
 // app.use(`${EndpointHead}/webhook`, webhook);
 
@@ -112,8 +114,8 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
               data.status === "successful" ? "success" : "failed",
             "payment.isPaid": data.status === "successful" ? true : false,
             "payment.sender": {
-              beneficiary_bank_name: data.meta_data.sender_bank_name,
-              beneficiary_name: data.meta_data.sender_account_name,
+              account_name: data.meta_data.sender_bank_name,
+              account_number: data.meta_data.sender_account_name,
             },
           },
         },
@@ -122,13 +124,23 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
       // Emit socket event with data
       io.emit(`Pay${data.account_id}`, {
-        status: data.status,
+        type: "Payment",
+        payment: {
+          created: data.created_at,
+          sender: {
+            account_number: data.meta_data.sender_account_number,
+            account_name: data.meta_data.sender_account_name,
+          },
+          amount: data.amount / 100,
+          status: data.status,
+        },
         infoR: redeemCode,
-        message: `${
-          data.status === "successful"
-            ? "Payment complete"
-            : "Incomplete payment"
-        }`,
+        id: data.reference,
+        // message: `${
+        //   data.status === "successful"
+        //     ? "Payment complete"
+        //     : "Incomplete payment"
+        // }`,
       });
 
       //send push notification

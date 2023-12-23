@@ -25,6 +25,12 @@ router.get("/getProfile", requireAuth, userController.GetProfile);
 router.put("/updateProfile", requireAuth, userController.updateProfile);
 
 //For withdrawal
+router.get(
+  "/getAccountName/:account_number/:bank_code",
+  requireAuth,
+  userController.AccountName
+);
+
 router.post("/withdraw", requireAuth, userController.withdraw);
 
 module.exports = router;

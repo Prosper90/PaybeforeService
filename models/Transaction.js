@@ -2,10 +2,10 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 
 const bankSchema = mongoose.Schema({
-  beneficiary_name: { type: String },
-  beneficiary_account: { type: String },
-  beneficiary_bank_name: { type: String },
-  beneficiary_bank_code: { type: String },
+  account_name: { type: String },
+  account_number: { type: String },
+  // beneficiary_bank_name: { type: String },
+  // beneficiary_bank_code: { type: String },
 });
 
 const PaymentSchema = mongoose.Schema({

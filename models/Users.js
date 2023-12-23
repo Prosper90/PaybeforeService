@@ -15,6 +15,13 @@ const balanceSchema = mongoose.Schema({
   refferal_wallet: { type: Number },
 });
 
+const beneficiariesSchema = mongoose.Schema({
+  bank_Name: { type: String },
+  bank_Code: { type: String },
+  account_Number: { type: String },
+  account_Name: { type: String },
+});
+
 const linkGenerated = mongoose.Schema({
   linkID: { type: String },
 
@@ -63,8 +70,12 @@ const userSchema = mongoose.Schema(
     balances: balanceSchema,
     password: {
       type: String,
-      minlength: [8, "Minimum password length is 4 characters"],
+      minlength: [8, "Minimum password length is 8 characters"],
       select: false,
+    },
+    pin: {
+      type: Number,
+      minlength: [4, "Minimum pin length is 4 numbers"],
     },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
@@ -75,6 +86,7 @@ const userSchema = mongoose.Schema(
     country: { type: String },
     date_of_birth: { type: Date },
     bank_info: BankSchema,
+    beneficiaries: [beneficiariesSchema],
     referer: { type: Number },
     userReferralID: { type: Number },
     referringUserIDs: [

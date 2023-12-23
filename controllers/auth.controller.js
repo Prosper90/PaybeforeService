@@ -104,7 +104,7 @@ exports.VerifyOtpSignUp = async (req, res, next) => {
 // users creates account header
 // before storing to the database
 exports.CreateAccount = async (req, res, next) => {
-  const { username, gender, email, password, date_of_birth } = req.body;
+  const { username, gender, email, password, pin, date_of_birth } = req.body;
 
   try {
     //Add checks for some other things
@@ -137,6 +137,7 @@ exports.CreateAccount = async (req, res, next) => {
           },
           country: "NG",
           password: hashedpassword,
+          pin: pin,
           referer: req.query.ref,
           userReferralID: refID,
           date_of_birth: date_of_birth,

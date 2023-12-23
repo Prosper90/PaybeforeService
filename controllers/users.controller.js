@@ -336,6 +336,23 @@ exports.updateProfile = async (req, res, next) => {
   }
 };
 
+exports.AccountName = async (req, res, next) => {
+  const { account_number, bank_code } = req.params;
+  try {
+    console.log(account_number, bank_code, "checks ooo");
+    const verifyUrl = `${process.env.LOCAL_BASE}/v1/resolve-account?account_number=${account_number}&bank_code=${bank_code}`;
+    const headers = generateLocalHeader(next);
+    const gotten = await makecall(verifyUrl, {}, headers, "get", next);
+    if (!gotten?.success) {
+      return next(new ErrorResponse("Couldnt get account name"));
+    }
+
+    return res.status(200).json({ status: true, data: gotten });
+  } catch (error) {
+    next(error);
+  }
+};
+
 /**
  * Get User Profile
  * @param {*} req
