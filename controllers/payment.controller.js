@@ -102,8 +102,8 @@ exports.GeneratePaymentLink = async (req, res, next) => {
   const values = responseLocal.data;
 
   const appendId = generateRandomAlphaNumeric(6);
-  const base = `${req.protocol}://${req.hostname}`;
-  const link = `${base}/${appendId}`;
+  //const base = `${req.protocol}://${req.hostname}`;
+  //const link = `${base}/${appendId}`;
   const Expire = Date.now() + 48 * 3600 * 1000; // Current timestamp + 300 seconds (5 minutes)
 
   try {
@@ -151,7 +151,6 @@ exports.GeneratePaymentLink = async (req, res, next) => {
       res.status(200).json({
         status: true,
         data: newPayment.linkID,
-        link: link,
         values: values,
       });
   } catch (error) {
