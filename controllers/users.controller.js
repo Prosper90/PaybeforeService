@@ -340,10 +340,16 @@ exports.AccountName = async (req, res, next) => {
   const { account_number, bank_code } = req.params;
   try {
     console.log(account_number, bank_code, "checks ooo");
-    const verifyUrl = `${process.env.LOCAL_BASE}/v1/resolve-account?account_number=${account_number}&bank_code=${bank_code}`;
-    const headers = generateLocalHeader(next);
+    const verifyUrl = `https://api.paystack.co/bank/resolve?account_number=${account_number}&bank_code=${bank_code}`;
+    console.log(verifyUrl, "checks");
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.LOCAL_SECRET_TWO}`,
+      accept: "application/json",
+    };
     const gotten = await makecall(verifyUrl, {}, headers, "get", next);
-    if (!gotten?.success) {
+    console.log(gotten, "gotten");
+    if (!gotten?.status) {
       return next(new ErrorResponse("Couldnt get account name"));
     }
 

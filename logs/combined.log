@@ -338,3 +338,14 @@
 {"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/8133150824/0324","timestamp":"2023-12-22T23:19:29.655Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/8133150824/0324","timestamp":"2023-12-22T23:21:34.629Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/1228804191/044","timestamp":"2023-12-22T23:22:10.469Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/1228804191/undefined","timestamp":"2023-12-24T04:02:50.927Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/8133150824/undefined","timestamp":"2023-12-24T04:04:52.998Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/1228804191/044","timestamp":"2023-12-24T04:51:04.754Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/1228804191/044","timestamp":"2023-12-24T05:20:13.409Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/1228804191/044","timestamp":"2023-12-24T05:22:43.687Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/8133150824/100004","timestamp":"2023-12-24T05:23:32.552Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/8133150824/000014","timestamp":"2023-12-24T05:23:54.514Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/user/getAccountName/8133150824/000014","timestamp":"2023-12-24T05:29:29.105Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/8133150824/000014","timestamp":"2023-12-24T05:29:42.532Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/8133150824/000014","timestamp":"2023-12-24T05:30:14.947Z"}
+{"level":"info","message":"GET /PayBeforeService/v1/user/getAccountName/8133150824/044","timestamp":"2023-12-24T05:32:09.435Z"}
