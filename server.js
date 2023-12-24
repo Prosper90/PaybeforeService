@@ -162,12 +162,12 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
     }
 
     //This is for debit, (like withdrawals)
-    if (event === "transaction.new" && data.drcr === "DR") {
+    if (event === "transaction.updated" && data.drcr === "DR") {
       //flow here is to find tx, by track_id the get the user id and from there get the user
       // const tx = await Transaction.findOne({ track_id: data.reference });
       // const user = await User.findOne({ _id: tx?.sender.wallet });
       // if (!user) return next(new ErrorResponse("No such user found", 401));
-
+      console.log(data.status, "checking something");
       //update created transaction
       await Transaction.findOneAndUpdate(
         { track_id: data.reference },
