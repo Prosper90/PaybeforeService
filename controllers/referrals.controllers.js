@@ -18,6 +18,10 @@ exports.GetAllRefs = async (req, res, next) => {
     const totalDocuments = await Bonus.countDocuments({
       owner: req.user._id,
     });
+
+    const allRefs = await Bonus.find({
+      owner: req.user._id,
+    });
     // const refs = await Bonus.find({ owner: req.user._id });
     const refs = await Bonus.find({ owner: req.user._id })
       .skip(startIndex)
@@ -41,7 +45,7 @@ exports.GetAllRefs = async (req, res, next) => {
         limit: limit,
       };
     }
-    res.status(200).json({ status: true, data: refs, pagination });
+    res.status(200).json({ status: true, data: refs, pagination, allRefs });
   } catch (error) {
     next(error);
   }

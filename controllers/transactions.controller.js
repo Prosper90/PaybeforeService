@@ -18,6 +18,10 @@ exports.GetAllTransactions = async (req, res, next) => {
       owner: req.user._id,
     });
 
+    const allTx = await Transaction.find({
+      owner: req.user._id,
+    });
+
     const transactions = await Transaction.find({ owner: req.user._id })
       .skip(startIndex)
       .limit(limit);
@@ -42,7 +46,9 @@ exports.GetAllTransactions = async (req, res, next) => {
       };
     }
 
-    res.status(200).json({ status: true, data: transactions, pagination });
+    res
+      .status(200)
+      .json({ status: true, data: transactions, pagination, allTx });
   } catch (error) {
     next(error);
   }

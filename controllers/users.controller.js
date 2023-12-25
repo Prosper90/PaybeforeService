@@ -413,6 +413,7 @@ exports.withdraw = async (req, res, next) => {
         },
         description: description,
       },
+      owner: req.user.id,
       status: "pending",
     });
 
