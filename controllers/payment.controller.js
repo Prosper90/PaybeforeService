@@ -34,7 +34,7 @@ exports.VerifypaymentDetailsfromIDOrLink = async (req, res, next) => {
         )
       );
     //check if is completetd
-    if (paymentGet.isPaid)
+    if (paymentGet.isPaid === "complete")
       return next(new ErrorResponse("Payment is already completed.", 203));
     //check if it has expired
     if (Date.now() > Date.parse(paymentGet.expired))
@@ -114,7 +114,8 @@ exports.GeneratePaymentLink = async (req, res, next) => {
       bank_name: values.bank_name,
       account_name: values.name,
       expired: Expire,
-      amount: amount,
+      amount_created: amount,
+      isPaid: "pending",
       status: "pending",
       user: req.user._id,
     };
@@ -125,7 +126,8 @@ exports.GeneratePaymentLink = async (req, res, next) => {
       payment: {
         linkID: appendId,
         expired: Expire,
-        amount: amount,
+        amount_created: amount,
+        amount_paid: 0,
         reciever: req.user._id,
       },
       owner: req.user._id,
@@ -186,16 +188,22 @@ exports.ReedemPayment = async (req, res, next) => {
     // const codeChecker = req.user.paymentLink.find(
     //   (gotten) => gotten.redeemCode === redeemCode
     // );
-    if (!check.paymentLink[0].isPaid)
+    if (check.paymentLink[0].isPaid === "failed")
+      return next(new ErrorResponse("This Tx has issues contact support", 401));
+
+    if (check.paymentLink[0].isPaid === "pending")
       return next(new ErrorResponse("This Tx has not been paid for", 401));
+
+    if (check.paymentLink[0].isPaid === "incomplete")
+      return next(new ErrorResponse("This Payment is not complete", 401));
 
     const updatedChecker = await User.findOneAndUpdate(
       { _id: req.user._id, "paymentLink.redeemCode": redeemCode },
       {
         $set: { "paymentLink.$.status": "Redeemed" },
         $inc: {
-          "balances.pending_wallet": -check.paymentLink[0].amount,
-          "balances.main_wallet": check.paymentLink[0].amount,
+          "balances.pending_wallet": -check.paymentLink[0].amount_paid,
+          "balances.main_wallet": check.paymentLink[0].amount_paid,
         },
       },
       { new: true }
@@ -217,8 +225,10 @@ exports.ReedemPayment = async (req, res, next) => {
         { _id: findReferer._id },
         {
           $inc: {
-            "balances.refferal_wallet": (3 * check.paymentLink[0].amount) / 100,
-            "balances.main_wallet": (3 * check.paymentLink[0].amount) / 100,
+            "balances.refferal_wallet":
+              (3 * check.paymentLink[0].amount_paid) / 100,
+            "balances.main_wallet":
+              (3 * check.paymentLink[0].amount_paid) / 100,
           },
         },
         { new: true }
@@ -227,7 +237,7 @@ exports.ReedemPayment = async (req, res, next) => {
       const bonus = new Bonus({
         type: "Referral Bonus",
         status: "success",
-        amount: (3 * check.paymentLink[0].amount) / 100,
+        amount: (3 * check.paymentLink[0].amount_paid) / 100,
         owner: findReferer._id,
       });
 
@@ -236,7 +246,7 @@ exports.ReedemPayment = async (req, res, next) => {
 
     const settledObject = {
       id: check.paymentLink[0].linkID,
-      amount: check.paymentLink[0].amount,
+      amount: check.paymentLink[0].amount_paid,
       status: updatedChecker.paymentLink.find(
         (gotten) => gotten.redeemCode === redeemCode
       ).status,

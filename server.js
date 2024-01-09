@@ -7,6 +7,7 @@ const payment = require("./routes/payment");
 const referral = require("./routes/referrals");
 const transaction = require("./routes/transaction");
 const bene = require("./routes/beneficiaries");
+const dispute = require("./routes/dispute");
 const webhook = require("./routes/webhook");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -51,6 +52,7 @@ app.use(`${EndpointHead}/transaction`, transaction);
 app.use(`${EndpointHead}/user`, user);
 app.use(`${EndpointHead}/referral`, referral);
 app.use(`${EndpointHead}/bene`, bene);
+app.use(`${EndpointHead}/dispute`, dispute);
 app.use(`${EndpointHead}/admin`, admin);
 // app.use(`${EndpointHead}/webhook`, webhook);
 
@@ -79,7 +81,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         { "paymentLink.$": 1 }
       );
 
-      //return res.status(200).json({ data: user });
+      // return res.status(200).json({ data: user });
 
       if (!user) return next(new ErrorResponse("No such user found", 401));
 
@@ -98,8 +100,17 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
             ),
           },
           $set: {
-            "paymentLink.$.isPaid": true,
+            "paymentLink.$.isPaid":
+              user.paymentLink.amount <
+              parseFloat((data.amount / 100).toFixed(2))
+                ? "incomplete"
+                : data.status !== "successful"
+                ? "failed"
+                : "complete",
             "paymentLink.$.redeemCode": redeemCode,
+            "paymentLink.$.amount_paid": parseFloat(
+              (data.amount / 100).toFixed(2)
+            ),
           },
         },
         { new: true }
@@ -111,18 +122,25 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         {
           $set: {
             status: data.status === "successful" ? "success" : "failed",
-            "payment.isPaid": data.status === "successful" ? true : false,
+            "payment.isPaid":
+              user.paymentLink.amount <
+              parseFloat((data.amount / 100).toFixed(2))
+                ? "incomplete"
+                : data.status !== "successful"
+                ? "failed"
+                : "complete",
             "payment.sender": {
               account_name: data.meta_data.sender_account_name,
               account_number: data.meta_data.sender_account_number,
             },
+            "payment.amount_paid": parseFloat((data.amount / 100).toFixed(2)),
           },
         },
         { new: true }
       );
 
       // Emit socket event with data
-      io.emit(`Pay${data.account_id}`, {
+      const emitData = {
         type: "Payment",
         payment: {
           sender: {
@@ -132,15 +150,20 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           amount: data.amount / 100,
         },
         status: data.status === "successful" ? "success" : "failed",
-        infoR: redeemCode,
-        id: data.reference,
+        id: user.paymentLink.linkID,
+        transfer_id: data.reference,
+        reciever: user._id,
         createdAt: data.created_at,
-        // message: `${
-        //   data.status === "successful"
-        //     ? "Payment complete"
-        //     : "Incomplete payment"
-        // }`,
-      });
+      };
+
+      // Conditionally add infoR property for failed status
+      if (data.status === "successful") {
+        emitData.infoR = redeemCode; // or replace with the appropriate reason
+      } else {
+        emitData.reason = "";
+      }
+
+      io.emit(`Pay${data.account_id}`, emitData);
 
       //send push notification
       // notificationStatus = sendNotification(

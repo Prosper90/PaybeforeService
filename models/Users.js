@@ -32,9 +32,10 @@ const linkGenerated = mongoose.Schema({
 
   created: { type: Date, default: Date.now() },
   expired: { type: Date },
-  amount: { type: Number },
+  amount_created: { type: Number },
+  amount_paid: { type: Number, default: 0 },
   redeemCode: { type: String },
-  isPaid: { type: Boolean, default: false },
+  isPaid: { type: String, default: "pending" }, //has values --> complete, incomplete, pending and failed
   status: { type: String }, // there is redeemed, pending and cancelled
 });
 
