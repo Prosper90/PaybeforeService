@@ -337,7 +337,17 @@ exports.CancelPayment = async (req, res, next) => {
     await User.findOneAndUpdate(
       { _id: req.user._id, "paymentLink.linkID": code },
       {
-        $set: { "paymentLink.$.status": "Cancelled" },
+        $set: { "paymentLink.$.status": "cancelled" },
+        $set: { "paymentLink.$.isPaid": "failed" },
+      }
+    );
+
+    //find the transaction and cancel also
+    await Transaction.findOneAndUpdate(
+      { track_id: code },
+      {
+        $set: { "payment.isPaid": "failed" },
+        $set: { status: "cancelled" },
       }
     );
 
@@ -348,7 +358,9 @@ exports.CancelPayment = async (req, res, next) => {
     //   { new: true }
     // );
 
-    return res.status(200).json({ status: true, data: "" });
+    return res
+      .status(200)
+      .json({ status: true, message: "transaction cancelled" });
   } catch (error) {
     next(error);
   }
