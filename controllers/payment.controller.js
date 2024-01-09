@@ -46,7 +46,7 @@ exports.VerifypaymentDetailsfromIDOrLink = async (req, res, next) => {
     const paymentObject = {
       clientName: user.full_name,
       payId: paymentGet.linkID,
-      amount: paymentGet.amount,
+      amount: paymentGet.amount_created,
       accountId: paymentGet.issue_id,
       accountName: paymentGet.account_name,
       accountNumber: paymentGet.account_number,
