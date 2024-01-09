@@ -81,7 +81,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         { "paymentLink.$": 1 }
       );
 
-      return res.status(200).json({ data: user });
+      // return res.status(200).json({ data: user });
 
       if (!user) return next(new ErrorResponse("No such user found", 401));
 
