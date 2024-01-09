@@ -81,7 +81,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         { "paymentLink.$": 1 }
       );
 
-      // return res.status(200).json({ data: user });
+      return res.status(200).json({ data: user });
 
       if (!user) return next(new ErrorResponse("No such user found", 401));
 
@@ -101,7 +101,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           },
           $set: {
             "paymentLink.$.isPaid":
-              user.paymentLink.amount <
+              user.paymentLink[0].amount_created <
               parseFloat((data.amount / 100).toFixed(2))
                 ? "incomplete"
                 : data.status !== "successful"
@@ -123,7 +123,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           $set: {
             status: data.status === "successful" ? "success" : "failed",
             "payment.isPaid":
-              user.paymentLink.amount <
+              user.paymentLink[0].amount <
               parseFloat((data.amount / 100).toFixed(2))
                 ? "incomplete"
                 : data.status !== "successful"
@@ -150,7 +150,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           amount: data.amount / 100,
         },
         status: data.status === "successful" ? "success" : "failed",
-        id: user.paymentLink.linkID,
+        id: user.paymentLink[0].linkID,
         transfer_id: data.reference,
         reciever: user._id,
         createdAt: data.created_at,

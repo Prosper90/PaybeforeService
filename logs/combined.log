@@ -386,3 +386,9 @@
 {"level":"info","message":"GET /images/cart/product-1.jpg","timestamp":"2024-01-09T14:34:35.961Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/payment/cancelPayment","timestamp":"2024-01-09T14:35:28.312Z"}
 {"level":"info","message":"GET /images/cart/product-1.jpg","timestamp":"2024-01-09T14:35:35.955Z"}
+{"level":"info","message":"GET /images/cart/product-1.jpg","timestamp":"2024-01-09T14:38:35.963Z"}
+{"level":"info","message":"GET /images/cart/product-1.jpg","timestamp":"2024-01-09T14:39:35.958Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/webhook/Handle","timestamp":"2024-01-09T14:40:26.996Z"}
+{"level":"info","message":"GET /images/cart/product-1.jpg","timestamp":"2024-01-09T14:40:35.965Z"}
+{"level":"info","message":"GET /images/cart/product-1.jpg","timestamp":"2024-01-09T14:41:35.980Z"}
+{"level":"info","message":"GET /images/cart/product-1.jpg","timestamp":"2024-01-09T14:42:35.971Z"}
