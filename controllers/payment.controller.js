@@ -330,15 +330,19 @@ exports.CancelPayment = async (req, res, next) => {
       }
     );
 
-    if (!check) {
-      return next(new ErrorResponse("no such payment", 401));
-    }
+    console.log(check, "checkers");
+
+    // if (check.paymentLink.length === 0) {
+    //   return next(new ErrorResponse("no such payment", 401));
+    // }
 
     await User.findOneAndUpdate(
       { _id: req.user._id, "paymentLink.linkID": code },
       {
-        $set: { "paymentLink.$.status": "cancelled" },
-        $set: { "paymentLink.$.isPaid": "failed" },
+        $set: {
+          "paymentLink.$.status": "cancelled",
+          "paymentLink.$.isPaid": "failed",
+        },
       }
     );
 
@@ -346,8 +350,10 @@ exports.CancelPayment = async (req, res, next) => {
     await Transaction.findOneAndUpdate(
       { track_id: code },
       {
-        $set: { "payment.isPaid": "failed" },
-        $set: { status: "cancelled" },
+        $set: {
+          "payment.isPaid": "failed",
+          status: "cancelled",
+        },
       }
     );
 
