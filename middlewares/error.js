@@ -4,7 +4,7 @@ const ErrorHandler = (err, req, res, next) => {
   let error = err;
   err.message = err.message;
 
-  console.log(err, "Omor ooo");
+  // console.log(err, "Omor ooo");
 
   // Duplicate error
   if (err.code === 11000) {
@@ -23,6 +23,11 @@ const ErrorHandler = (err, req, res, next) => {
     error = new errorResponse(errorMessage, 404); // You can choose an appropriate status code
   }
 
+  if (err instanceof TypeError) {
+    const errorMessage = err.message;
+    error = new errorResponse(errorMessage, 404); // You can choose an appropriate status code
+  }
+
   // Mongo validation error
   if (err.name === "ValidationError") {
     const message = Object.values(err.errors).map((val) => val.message);
@@ -31,23 +36,24 @@ const ErrorHandler = (err, req, res, next) => {
 
   // Validation errors
   if (err.message.includes("User validation failed")) {
-    console.log("Caught this one");
+    // console.log("Caught this one");
     const getErrMessage = {};
     Object.values(err.errors).forEach(({ properties }) => {
-      console.log(properties, "props props");
+      // console.log(properties, "props props");
       if (properties.path) {
         getErrMessage[properties.path] = properties.message;
       }
     });
 
     const errorMessage = Object.values(getErrMessage).join(", ");
-    console.log(errorMessage, "checking err message");
+    // console.log(errorMessage, "checking err message");
     error = new errorResponse(errorMessage, 404);
   }
 
   // Handle other general errors
   const statusCode = error?.statusCode || 500;
   const message = error.message || "Internal Server Error";
+  console.log("type one checkers");
   res.status(statusCode).json({ status: false, message: message });
 };
 

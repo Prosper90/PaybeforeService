@@ -29,13 +29,13 @@ const linkGenerated = mongoose.Schema({
   account_name: { type: String },
   account_number: { type: String },
   bank_name: { type: String },
-
   created: { type: Date, default: Date.now() },
   expired: { type: Date },
   amount_created: { type: Number },
   amount_paid: { type: Number, default: 0 },
   redeemCode: { type: String },
   isPaid: { type: String, default: "pending" }, //has values --> complete, incomplete, pending and failed
+  incompletePaymentCount: { type: Number, default: 0 },
   status: { type: String }, // there is redeemed, pending and cancelled
 });
 
@@ -125,14 +125,21 @@ const userSchema = mongoose.Schema(
 // };
 
 // static method to login user
-userSchema.statics.login = async function (email, password, next) {
-  const user = await this.findOne({ email: email }).select("+password");
+userSchema.statics.login = async function (email, password) {
+    const user = await this.findOne({ email: email }).select("+password");
 
-  if (!user) return next(new ErrorResponse("incorrect email", 401));
-  const auth = await bcrypt.compare(password, user.password);
-  if (!auth) return next(new ErrorResponse("incorrect password", 401));
+    if (!user) {
+      throw new ErrorResponse("incorrect email", 401);
+    } 
+    // return next(new ErrorResponse("incorrect email", 401));
+    const auth = await bcrypt.compare(password, user.password);
+    if (!auth) {
+      throw new ErrorResponse("incorrect password", 401)
+    }
+    // return next(new ErrorResponse("incorrect password", 401));
 
-  return user;
+    return user;
+
 };
 
 //Method to handle recent transactions

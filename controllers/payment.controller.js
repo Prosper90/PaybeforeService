@@ -95,8 +95,8 @@ exports.GeneratePaymentLink = async (req, res, next) => {
     "post",
     next
   );
-
-  if (!responseLocal.success) {
+  console.log(responseLocal, "lets see again");
+  if (!responseLocal?.success) {
     return next(new ErrorResponse(responseLocal.message, 400));
   }
   const values = responseLocal.data;
@@ -155,6 +155,93 @@ exports.GeneratePaymentLink = async (req, res, next) => {
         data: newPayment.linkID,
         values: values,
       });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.RemakePayment = async (req, res, next) => {
+  const { amount, payment_id } = req.body;
+  try {
+    const user = await User.findOne(
+      {
+        "paymentLink.linkID": payment_id,
+      },
+      { "paymentLink.$": 1 }
+    );
+    if (!user) return next(new ErrorResponse("Id does not exist", 400));
+
+    const apiUrl = `${process.env.LOCAL_BASE}v1/accounts/collections`;
+
+    const headersLocal = generateLocalHeader();
+
+    // Create a customer on third party request body
+    const RequestData = {
+      preferred_bank: "Sterling",
+      alias: "remaking payment",
+      collection_rules: {
+        frequency: 1,
+        amount: amount * 100,
+      },
+    };
+
+    //make  local call
+    const responseLocal = await makecall(
+      apiUrl,
+      RequestData,
+      headersLocal,
+      "post",
+      next
+    );
+
+    if (!responseLocal.success) {
+      return next(new ErrorResponse(responseLocal.message, 400));
+    }
+    const values = responseLocal.data;
+
+    // const newPayment = {
+    //   linkID: user.paymentLink[0].linkID,
+    //   issue_id: values.id,
+    //   account_number: values.account_number,
+    //   bank_name: values.bank_name,
+    //   account_name: values.name,
+    //   expired: Expire,
+    //   amount_created: amount,
+    //   isPaid: "pending",
+    //   status: "pending",
+    //   user: req.user._id,
+    // };
+
+    const updatePayment = await User.findOneAndUpdate(
+      {
+        _id: user._id,
+        "paymentLink.linkID": user.paymentLink[0].linkID,
+      },
+      {
+        $set: {
+          "paymentLink.$.issue_id": values.id,
+          "paymentLink.$.account_name": values.name,
+          "paymentLink.$.account_number": values.account_number,
+          "paymentLink.$.bank_name": values.bank_name,
+        },
+      },
+      { new: true }
+    );
+    if (!updatePayment)
+      return next(new ErrorResponse("Payment not updated", 400));
+
+    const data = {
+      clientName: user.full_name,
+      payId: user.paymentLink[0].linkID,
+      amount: amount,
+      accountId: values.id,
+      accountName: values.name,
+      accountNumber: values.account_number,
+      bank: values.bank_name,
+      expiration: user.paymentLink[0].expired,
+    };
+
+    res.status(200).json({ status: true, data });
   } catch (error) {
     next(error);
   }

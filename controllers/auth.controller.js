@@ -34,7 +34,7 @@ exports.RegisterWithOtp = async (req, res, next) => {
     user = await user.save();
 
     const sent = await sendOtp("email", otp, req.body.email, next);
-    console.log(sent, "checking upon depoying");
+    // console.log(sent, "checking upon depoying");
     if (!sent.status) return next(new ErrorResponse(sent.message, 401));
     return res.status(200).json({ status: true, message: "otp sent" });
   } catch (error) {
@@ -44,7 +44,7 @@ exports.RegisterWithOtp = async (req, res, next) => {
 
 //Resend Auth
 exports.ResendOtp = async (req, res, next) => {
-  console.log("11111111111");
+  // console.log("11111111111");
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return next(new ErrorResponse("Email  doesnt exist", 401));
@@ -72,7 +72,7 @@ exports.VerifyOtpSignUp = async (req, res, next) => {
   //console.log(req.user);
   //send Otp to req.body.number
   const otpRecieved = req.body.otp;
-  console.log(otpRecieved, "checkers");
+  // console.log(otpRecieved, "checkers");
   const user = await User.findOne({ otp: otpRecieved });
   if (!user) {
     return next(new ErrorResponse("No User exist", 401));
@@ -172,8 +172,7 @@ exports.loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.login(email, password, next);
-
+    const user = await User.login(email, password);
     const token = createToken(user._id);
     //sendResponseWithToken(res, 200, { success: true, data: user }, token);
     return res.status(200).json({ status: true, data: user, token: token });
