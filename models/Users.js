@@ -126,20 +126,19 @@ const userSchema = mongoose.Schema(
 
 // static method to login user
 userSchema.statics.login = async function (email, password) {
-    const user = await this.findOne({ email: email }).select("+password");
+  const user = await this.findOne({ email: email }).select("+password");
 
-    if (!user) {
-      throw new ErrorResponse("incorrect email", 401);
-    } 
-    // return next(new ErrorResponse("incorrect email", 401));
-    const auth = await bcrypt.compare(password, user.password);
-    if (!auth) {
-      throw new ErrorResponse("incorrect password", 401)
-    }
-    // return next(new ErrorResponse("incorrect password", 401));
+  if (!user) {
+    throw new ErrorResponse("incorrect email", 401);
+  }
+  // return next(new ErrorResponse("incorrect email", 401));
+  const auth = await bcrypt.compare(password, user.password);
+  if (!auth) {
+    throw new ErrorResponse("incorrect password", 401);
+  }
+  // return next(new ErrorResponse("incorrect password", 401));
 
-    return user;
-
+  return user;
 };
 
 //Method to handle recent transactions

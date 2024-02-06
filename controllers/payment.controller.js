@@ -36,6 +36,15 @@ exports.VerifypaymentDetailsfromIDOrLink = async (req, res, next) => {
     //check if is completetd
     if (paymentGet.isPaid === "complete")
       return next(new ErrorResponse("Payment is already completed.", 203));
+
+    if(paymentGet.isPaid === "incomplete") {
+      const amountsData = {
+        amount_created: paymentGet.amount_created,
+        amount_paid: paymentGet.amount_paid
+      }
+      return res.status(203).json({ status: false, data: amountsData,  message: "Payment is incomplete" });
+    }  
+
     //check if it has expired
     if (Date.now() > Date.parse(paymentGet.expired))
       return next(new ErrorResponse("Payment is expired.", 203));

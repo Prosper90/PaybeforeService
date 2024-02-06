@@ -2,10 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 const disputeController = require("../controllers/dispute.controller");
-// const { requireAuth } = require("../middlewares/authMiddleware");
+const { requireAuth } = require("../middlewares/authMiddleware");
 
 //Dipute route
-
+//get all disputes
+router.get("/get_all_disputes", requireAuth, disputeController.GetAllDisputes);
+//check a payment_id
+router.get("/check_id/:pay_id", disputeController.CheckID);
 //find a particular dispute
 router.get("/find_dispute/:id", disputeController.FindDispute);
 

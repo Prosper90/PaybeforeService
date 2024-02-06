@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const DisputeSchema = mongoose.Schema(
   {
-    type: { type: String }, //the types here includes *transaction, *info *complaint and inquiry
+    type: { type: String }, //the types here includes *transaction, *info *complaint *inquiry and *others
     status: { type: String },
     payment_status: { type: String }, //contains *pending*, *failed* and *complete*
     dispute_id: { type: String },
@@ -12,7 +12,10 @@ const DisputeSchema = mongoose.Schema(
     sender: { type: String },
     reciever: { type: String },
     reason: { type: String },
+    client_tx: { type: Boolean }, //checks clients testament, if client payment to receiver was successful or not
+    refund: { type: String },
     reminder: { type: Number, default: 0 },
+    owner: { type: String }, //recieves email as value. it can be the email of the sender or one with an account
   },
   { timestamps: true }
 );
