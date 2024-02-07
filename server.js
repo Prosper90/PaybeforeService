@@ -175,7 +175,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
             "paymentLink.$.redeemCode": redeemCode,
             "paymentLink.$.amount_paid": amountPaid,
-            "paymentLink.$.payment_recieved": Date.now();
+            "paymentLink.$.payment_recieved": Date.now()
           },
         },
         { new: true }
@@ -246,7 +246,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
       io.emit(`Pay${data.account_id}`, emitData);
 
-      // console.log(`Pay${data.account_id}`, emitData);
+      console.log(`Pay${data.account_id}`, emitData);
 
       //send push notification
       // notificationStatus = sendNotification(
