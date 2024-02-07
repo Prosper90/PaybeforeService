@@ -122,6 +122,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           : parseFloat((data.amount / 100).toFixed(2)) +
             user.paymentLink[0].amount_paid;
 
+      // console.log(data.amount, "checking the amount sent");
       //update a user
       await User.findOneAndUpdate(
         {
@@ -130,52 +131,31 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         },
         {
           $inc: {
-            "balances.pending_wallet": parseFloat(
-              (data.amount / 100).toFixed(2)
-            ),
-          },
-          $inc: {
-            "paymentLink.$.incompletePaymentCount":
-              user.paymentLink[0].incompletePaymentCount === 0
-                ? user.paymentLink[0].amount_created >
-                    parseFloat((data.amount / 100).toFixed(2)) && 1
-                : user.paymentLink[0].incompletePaymentCount !== 0 &&
-                  user.paymentLink[0].amount_created >
-                    parseFloat((data.amount / 100).toFixed(2)) +
-                      user.paymentLink[0].amountPaid &&
-                  1,
+            "balances.pending_wallet": parseFloat((data.amount / 100).toFixed(2)),
           },
           $set: {
             "paymentLink.$.isPaid": (() => {
               const amountPaid = parseFloat((data.amount / 100).toFixed(2));
               const amountCreated = user.paymentLink[0].amount_created;
               const amountPreviouslyPaid = user.paymentLink[0].amount_paid;
-              const isComplete =
-                user.paymentLink[0].incompletePaymentCount === 0;
+              const isComplete = user.paymentLink[0].incompletePaymentCount === 0;
               const isSuccessful = data.status === "successful";
-
-              //first of check for first time then check for not first time using the "incompletePaymentCount" as condition
-
-              if (user.paymentLink[0].incompletePaymentCount === 0) {
-                if (amountCreated > amountPaid) {
-                  return "incomplete";
-                } else {
-                  return "complete";
-                }
-              } else if (user.paymentLink[0].incompletePaymentCount !== 0) {
-                if (amountCreated <= amountPreviouslyPaid + amountPaid) {
-                  return "complete";
-                } else {
-                  return "incomplete";
-                }
-              } else if (!isSuccessful) {
-                return "failed";
+      
+              // Logic to determine isPaid value
+              let isPaid;
+              if (isComplete) {
+                isPaid = "complete";
+              } else if (amountCreated <= amountPreviouslyPaid + amountPaid) {
+                isPaid = "complete";
+              } else {
+                isPaid = "incomplete";
               }
+      
+              return isPaid;
             })(),
-
             "paymentLink.$.redeemCode": redeemCode,
             "paymentLink.$.amount_paid": amountPaid,
-            "paymentLink.$.payment_recieved": Date.now()
+            "paymentLink.$.payment_received": Date.now(), // Corrected spelling
           },
         },
         { new: true }
@@ -246,7 +226,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
       io.emit(`Pay${data.account_id}`, emitData);
 
-      console.log(`Pay${data.account_id}`, emitData);
+      // console.log(`Pay${data.account_id}`, emitData);
 
       //send push notification
       // notificationStatus = sendNotification(

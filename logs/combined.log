@@ -509,3 +509,7 @@
 {"level":"info","message":"GET /PayBeforeService/v1/dispute/get_all_disputes?page=1","timestamp":"2024-02-06T19:06:01.558Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/dispute/get_all_disputes?page=1","timestamp":"2024-02-06T19:06:02.641Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/payment/verifyPayment/0M0JQQ","timestamp":"2024-02-06T19:07:29.410Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/login","timestamp":"2024-02-07T19:23:23.910Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/payment/generatePaymentLink","timestamp":"2024-02-07T19:24:05.268Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/webhook/Handle","timestamp":"2024-02-07T19:25:26.137Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/webhook/Handle","timestamp":"2024-02-07T19:34:57.203Z"}
