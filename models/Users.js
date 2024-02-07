@@ -30,6 +30,7 @@ const linkGenerated = mongoose.Schema({
   account_number: { type: String },
   bank_name: { type: String },
   created: { type: Date, default: Date.now() },
+  payment_recieved: { type: Date},
   expired: { type: Date },
   amount_created: { type: Number },
   amount_paid: { type: Number, default: 0 },

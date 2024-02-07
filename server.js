@@ -174,8 +174,8 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
             })(),
 
             "paymentLink.$.redeemCode": redeemCode,
-
             "paymentLink.$.amount_paid": amountPaid,
+            "paymentLink.$.payment_recieved": Date.now();
           },
         },
         { new: true }
