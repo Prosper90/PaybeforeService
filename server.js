@@ -245,7 +245,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         ${message}
         Reedem code ${returnPaymentStatus === "complete" ? returnedData : 0}
       `
-      sendPaymentInfo(info, user.paymentLink[0].sender_mail, next);
+      sendPaymentInfo(info, user.paymentLink[0].sender_mail, next); //send message to their email
       //return api call
       return res.status(200).json({
         status: true,
