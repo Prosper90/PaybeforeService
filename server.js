@@ -21,6 +21,7 @@ const { Transaction } = require("./models/Transaction");
 // const {
 //   sendNotification,
 // } = require("../utils/Notification/push-notification.service");
+const { sendPaymentInfo } = require("./utils/email");
 const crypto = require("crypto");
 const { Notifications } = require("./models/Notifications");
 const http = require("http");
@@ -238,6 +239,14 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
       const returnedData = redeemCode; //user.paymentLink.find( (one) => one.issue_id === data.account_id).redeemCode,
       const message = `Deposit ${returnPaymentStatus}`;
+
+      //Send email to payee
+      const info = `
+        ${message}
+        Reedem code ${returnPaymentStatus === "complete" ? returnedData : 0}
+      `
+      sendPaymentInfo(info, user.paymentLink[0].sender_mail, next);
+      //return api call
       return res.status(200).json({
         status: true,
         message: message,

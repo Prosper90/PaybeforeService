@@ -257,6 +257,50 @@ exports.RemakePayment = async (req, res, next) => {
 };
 
 /**
+ * Take senders email
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+exports.SenderEmail = async (req, res, next) => {
+  const {email, payment_id} = req.body;
+  try {
+
+    const user = await User.findOne(
+      {
+        "paymentLink.linkID": payment_id,
+      },
+      { "paymentLink.$": 1 }
+    );
+    if (!user) return next(new ErrorResponse("Id does not exist", 400));
+
+    //check that payment status is pending
+    // if() return next(new ErrorResponse("User is already verified", 409))
+
+    const updatePayment = await User.findOneAndUpdate(
+      {
+        _id: user._id,
+        "paymentLink.linkID": user.paymentLink[0].linkID,
+      },
+      {
+        $set: {
+          "paymentLink.$.sender_mail": email,
+        },
+      },
+      { new: true }
+    );
+    if (!updatePayment)
+    return next(new ErrorResponse("Email taking error", 400));
+
+
+    res.status(200).json({ status: true, message: "email saved" });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
  * Girl redeems her payment
  * @param {*} req
  * @param {*} res

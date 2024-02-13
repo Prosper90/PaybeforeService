@@ -65,4 +65,39 @@ const sendPasswordEmail = (info, reciepient, next) => {
   }
 };
 
+
+
+
+const sendPaymentInfo = (info, reciepient, next) => {
+  try {
+    // Create a transporter object using your SMTP server details
+    const transporter = nodemailer.createTransport({
+      service: "Gmail", // e.g., "Gmail", "Outlook", "Yahoo", or use your SMTP server details
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    // Email content
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: reciepient,
+      subject: "Payment info fromsaturn",
+      text: `This is a test email to show you your payment details ${info} `,
+    };
+
+    // Send email
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        return { status: false, message: error };
+      } else {
+        return { status: true, message: info };
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = { sendEmail, sendPasswordEmail };

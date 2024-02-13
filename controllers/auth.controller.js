@@ -15,6 +15,8 @@ const { createToken } = require("../utils/createTokens");
 //Resend Auth
 exports.RegisterWithOtp = async (req, res, next) => {
   const { email } = req.body;
+  
+  if(!email) return next(new ErrorResponse("add email to continue", 201));
 
   const userCheck = await User.findOne({ email: req.body.email });
   if (userCheck) {

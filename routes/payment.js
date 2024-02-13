@@ -15,7 +15,7 @@ router.post(
   paymentController.GeneratePaymentLink
 );
 router.post("/remakePayment", paymentController.RemakePayment);
-
+router.post("/sender_email", paymentController.SenderEmail);
 router.post("/payToLink", paymentController.MakePaymentToLink);
 router.post("/redeemPayment", requireAuth, paymentController.ReedemPayment);
 router.post("/cancelPayment", requireAuth, paymentController.CancelPayment);
