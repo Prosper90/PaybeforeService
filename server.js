@@ -139,7 +139,8 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
               const amountPaid = parseFloat((data.amount / 100).toFixed(2));
               const amountCreated = user.paymentLink[0].amount_created;
               const amountPreviouslyPaid = user.paymentLink[0].amount_paid;
-              const isComplete = user.paymentLink[0].incompletePaymentCount === 0;
+              const isComplete = (user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created >
+              parseFloat((data.amount / 100).toFixed(2)) ) || (user.paymentLink[0].incompletePaymentCount !== 0 && user.paymentLink[0].amount_created <= parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid);
               const isSuccessful = data.status === "successful";
       
               // Logic to determine isPaid value
