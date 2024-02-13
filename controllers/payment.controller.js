@@ -61,6 +61,7 @@ exports.VerifypaymentDetailsfromIDOrLink = async (req, res, next) => {
       accountNumber: paymentGet.account_number,
       bank: paymentGet.bank_name,
       expiration: paymentGet.expired,
+      email: paymentGet?.sender_mail
     };
 
     res.status(200).json({ status: true, data: paymentObject });
