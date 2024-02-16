@@ -122,7 +122,9 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           : parseFloat((data.amount / 100).toFixed(2)) +
             user.paymentLink[0].amount_paid;
       
-      console.log(amountPaid, "amount paid")
+      console.log(amountPaid, "amount paid");
+
+      console.log(user.paymentLink[0].incompletePaymentCount, "opening here sharp");
 
       // console.log(data.amount, "checking the amount sent");
       //update a user
@@ -134,6 +136,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         {
           $inc: {
             "balances.pending_wallet": parseFloat((data.amount / 100).toFixed(2)),
+            "paymentLink.$.incompletePaymentCount": returnPaymentStatus === "incomplete" && 1,
           },
           $set: {
             "paymentLink.$.isPaid": returnPaymentStatus,
@@ -196,7 +199,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       };
 
       // Conditionally add infoR property for failed status
-      if (data.status === "successful" && returnStatus === "complete") {
+      if (data.status === "successful" && returnPaymentStatus === "complete") {
         emitData.infoR = redeemCode; // or replace with the appropriate reason
       } else {
         emitData.reason = returnPaymentStatus;
