@@ -204,7 +204,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
       io.emit(`Pay${data.account_id}`, emitData);
 
-      // console.log(`Pay${data.account_id}`, emitData);
+      console.log(`Pay${data.account_id}`, emitData);
 
       //send push notification
       // notificationStatus = sendNotification(
