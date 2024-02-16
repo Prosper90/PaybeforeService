@@ -98,6 +98,12 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           "failed"
           : "success";
 
+          console.log(returnTxStatus, "tx status");
+          
+
+          // const isInComplete = (user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created >
+          //   parseFloat((data.amount / 100).toFixed(2)) ) || (user.paymentLink[0].incompletePaymentCount !== 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid); 
+
       const returnPaymentStatus =
         (user.paymentLink[0].incompletePaymentCount === 0)
           && user.paymentLink[0].amount_created >
@@ -108,11 +114,15 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           : data.status !== "successful" ? "failed"
           : "complete";
 
+          console.log(returnPaymentStatus, "payments status");
+
       const amountPaid =
         user.paymentLink[0].incompletePaymentCount === 0
           ? parseFloat((data.amount / 100).toFixed(2))
           : parseFloat((data.amount / 100).toFixed(2)) +
             user.paymentLink[0].amount_paid;
+      
+      console.log(amountPaid, "amount paid")
 
       // console.log(data.amount, "checking the amount sent");
       //update a user
@@ -126,24 +136,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
             "balances.pending_wallet": parseFloat((data.amount / 100).toFixed(2)),
           },
           $set: {
-            "paymentLink.$.isPaid": (() => {
-              const amountPaid = parseFloat((data.amount / 100).toFixed(2));
-              const amountCreated = user.paymentLink[0].amount_created;
-              const amountPreviouslyPaid = user.paymentLink[0].amount_paid;
-              const isInComplete = (user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created >
-              parseFloat((data.amount / 100).toFixed(2)) ) || (user.paymentLink[0].incompletePaymentCount !== 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid);
-              const isSuccessful = data.status === "successful";
-      
-              // Logic to determine isPaid value
-              let isPaid;
-              if (isInComplete) {
-                isPaid = "incomplete";
-              } else {
-                isPaid = "complete";
-              }
-      
-              return isPaid;
-            })(),
+            "paymentLink.$.isPaid": returnPaymentStatus,
             "paymentLink.$.redeemCode": redeemCode,
             "paymentLink.$.amount_paid": amountPaid,
             "paymentLink.$.payment_received": Date.now(), // Corrected spelling
@@ -170,13 +163,13 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       );
 
       //return status
-      const returnStatus =
-        user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2))
-            ? "incomplete"
-          : (user.paymentLink[0].incompletePaymentCount !== 0) && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid
-            ? "incomplete"
-          : data.status === "successful" ? "failed"
-          : "complete";
+      // const returnStatus =
+      //   user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2))
+      //       ? "incomplete"
+      //     : (user.paymentLink[0].incompletePaymentCount !== 0) && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid
+      //       ? "incomplete"
+      //     : data.status === "successful" ? "failed"
+      //     : "complete";
 
       // Emit socket event with data
       const emitData = {
@@ -189,9 +182,9 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           amount: amountPaid,
         },
         status:
-          returnStatus === "complete"
+        returnPaymentStatus === "complete"
             ? "success"
-            : returnStatus === "incomplete"
+            : returnPaymentStatus === "incomplete"
             ? "incomplete"
             : "failed",
         amount_created: user.paymentLink[0].amount_created,
@@ -206,7 +199,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       if (data.status === "successful" && returnStatus === "complete") {
         emitData.infoR = redeemCode; // or replace with the appropriate reason
       } else {
-        emitData.reason = returnStatus;
+        emitData.reason = returnPaymentStatus;
       }
 
       io.emit(`Pay${data.account_id}`, emitData);
