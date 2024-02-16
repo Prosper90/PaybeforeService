@@ -201,11 +201,11 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       } else {
         emitData.reason = returnPaymentStatus;
       }
+      console.log(`Pay${data.account_id}`, emitData);
 
       io.emit(`Pay${data.account_id}`, emitData);
 
-      console.log(`Pay${data.account_id}`, emitData);
-
+      console.log("after emmiting all done");
       //send push notification
       // notificationStatus = sendNotification(
       //   "Deposit",
