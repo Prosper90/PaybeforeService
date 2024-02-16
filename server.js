@@ -90,32 +90,23 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
       //variables
       const returnTxStatus =
-        user.paymentLink[0].incompletePaymentCount === 0
-          ? user.paymentLink[0].amount_created >
-            parseFloat((data.amount / 100).toFixed(2))
+        (user.paymentLink[0].incompletePaymentCount === 0) && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2))
             ? "pending"
-            : "success"
-          : user.paymentLink[0].incompletePaymentCount !== 0
-          ? user.paymentLink[0].amount_created >
-            parseFloat((data.amount / 100).toFixed(2)) +
-              user.paymentLink[0].amount_paid
+          : (user.paymentLink[0].incompletePaymentCount !== 0 ) && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid
             ? "pending"
-            : "success"
-          : data.status !== "successful" && "failed";
+          : data.status !== "successful" ? 
+          "failed"
+          : "success";
 
       const returnPaymentStatus =
-        user.paymentLink[0].incompletePaymentCount === 0
-          ? user.paymentLink[0].amount_created >
+        (user.paymentLink[0].incompletePaymentCount === 0)
+          && user.paymentLink[0].amount_created >
             parseFloat((data.amount / 100).toFixed(2))
             ? "incomplete"
-            : "complete"
-          : user.paymentLink[0].incompletePaymentCount !== 0
-          ? user.paymentLink[0].amount_created >
-            parseFloat((data.amount / 100).toFixed(2)) +
-              user.paymentLink[0].amount_paid
+          : (user.paymentLink[0].incompletePaymentCount !== 0) && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid
             ? "incomplete"
-            : "complete"
-          : data.status !== "successful" && "failed";
+          : data.status !== "successful" ? "failed"
+          : "complete";
 
       const amountPaid =
         user.paymentLink[0].incompletePaymentCount === 0
@@ -139,18 +130,16 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
               const amountPaid = parseFloat((data.amount / 100).toFixed(2));
               const amountCreated = user.paymentLink[0].amount_created;
               const amountPreviouslyPaid = user.paymentLink[0].amount_paid;
-              const isComplete = (user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created >
-              parseFloat((data.amount / 100).toFixed(2)) ) || (user.paymentLink[0].incompletePaymentCount !== 0 && user.paymentLink[0].amount_created <= parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid);
+              const isInComplete = (user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created >
+              parseFloat((data.amount / 100).toFixed(2)) ) || (user.paymentLink[0].incompletePaymentCount !== 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid);
               const isSuccessful = data.status === "successful";
       
               // Logic to determine isPaid value
               let isPaid;
-              if (isComplete) {
-                isPaid = "complete";
-              } else if (amountCreated <= amountPreviouslyPaid + amountPaid) {
-                isPaid = "complete";
-              } else {
+              if (isInComplete) {
                 isPaid = "incomplete";
+              } else {
+                isPaid = "complete";
               }
       
               return isPaid;
@@ -182,18 +171,12 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
       //return status
       const returnStatus =
-        user.paymentLink[0].incompletePaymentCount === 0
-          ? user.paymentLink[0].amount_created >
-            parseFloat((data.amount / 100).toFixed(2))
+        user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2))
             ? "incomplete"
-            : "complete"
-          : user.paymentLink[0].incompletePaymentCount !== 0
-          ? user.paymentLink[0].amount_created >
-            parseFloat((data.amount / 100).toFixed(2)) +
-              user.paymentLink[0].amount_paid
+          : (user.paymentLink[0].incompletePaymentCount !== 0) && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid
             ? "incomplete"
-            : "complete"
-          : data.status === "successful" && "failed";
+          : data.status === "successful" ? "failed"
+          : "complete";
 
       // Emit socket event with data
       const emitData = {

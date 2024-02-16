@@ -100,4 +100,4 @@ const sendPaymentInfo = (info, reciepient, next) => {
   }
 };
 
-module.exports = { sendEmail, sendPasswordEmail };
+module.exports = { sendEmail, sendPasswordEmail, sendPaymentInfo };
