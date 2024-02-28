@@ -36,9 +36,9 @@ const linkGenerated = mongoose.Schema({
   amount_paid: { type: Number, default: 0 },
   sender_mail: {type: String},
   redeemCode: { type: String },
-  isPaid: { type: String, default: "pending" }, //has values --> complete, incomplete, pending and failed
+  isPaid: { type: String, default: "pending" }, //has values --> complete, incomplete, pending, failed and expired
   incompletePaymentCount: { type: Number, default: 0 },
-  status: { type: String }, // there is redeemed, pending and cancelled
+  status: { type: String }, // there is redeemed, pending, cancelled and expired
 });
 
 const userSchema = mongoose.Schema(

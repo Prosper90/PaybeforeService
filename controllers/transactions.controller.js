@@ -23,6 +23,7 @@ exports.GetAllTransactions = async (req, res, next) => {
     });
 
     const transactions = await Transaction.find({ owner: req.user._id })
+      .sort({ createdAt: -1 })
       .skip(startIndex)
       .limit(limit);
 

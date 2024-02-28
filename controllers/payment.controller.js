@@ -6,6 +6,7 @@ const { generateRandomAlphaNumeric } = require("../utils/createTokens");
 const { generateLocalHeader } = require("../utils/genHeadersData");
 const { Transaction } = require("../models/Transaction");
 const { Bonus } = require("../models/Bonus.js");
+const { sendPaymentInfo } = require("../utils/email");
 
 /**
  * Get a payment link detail or details
@@ -46,7 +47,7 @@ exports.VerifypaymentDetailsfromIDOrLink = async (req, res, next) => {
     }  
 
     //check if it has expired
-    if (Date.now() > Date.parse(paymentGet.expired))
+    if (Date.now() > Date.parse(paymentGet.expired) && paymentGet.incompletePaymentCount === 0)
       return next(new ErrorResponse("Payment is expired.", 203));
 
     // account_number: values.account_number,
@@ -114,7 +115,10 @@ exports.GeneratePaymentLink = async (req, res, next) => {
   const appendId = generateRandomAlphaNumeric(6);
   //const base = `${req.protocol}://${req.hostname}`;
   //const link = `${base}/${appendId}`;
-  const Expire = Date.now() + 48 * 3600 * 1000; // Current timestamp + 300 seconds (5 minutes)
+
+  // 30 minutes in milliseconds 
+  const thirtyMins = 30 * 60 * 1000;
+  const Expire = Date.now() + thirtyMins; // Current timestamp + 30 minutes
 
   try {
     const newPayment = {
@@ -258,7 +262,7 @@ exports.RemakePayment = async (req, res, next) => {
 };
 
 /**
- * Take senders email
+ * Save senders email
  * @param {*} req
  * @param {*} res
  * @param {*} next
@@ -295,6 +299,52 @@ exports.SenderEmail = async (req, res, next) => {
 
 
     res.status(200).json({ status: true, message: "email saved" });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+/**
+ * Save Expired payment link
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+exports.ExpiredPayment = async (req, res, next) => {
+  const {email, payment_id} = req.body;
+  try {
+
+    const user = await User.findOne(
+      {
+        "paymentLink.linkID": payment_id,
+      },
+      { "paymentLink.$": 1 }
+    );
+    if (!user) return next(new ErrorResponse("Id does not exist", 400));
+
+
+    const updatePayment = await User.findOneAndUpdate(
+      {
+        _id: user._id,
+        "paymentLink.linkID": user.paymentLink[0].linkID,
+      },
+      {
+        $set: {
+          "paymentLink.$.isPaid": "expired",
+          "paymentLink.$.status": "expired",
+        },
+      },
+      { new: true }
+    );
+    if (!updatePayment)
+    return next(new ErrorResponse("Expired route taking error", 400));
+
+    //send message to email
+    const info = `Payment Link ${payment_id} has expired and would no longer be active. do not send funds into the account`;
+    sendPaymentInfo(info, email, next); //send message to their email
+    res.status(200).json({ status: true, message: "Payment expired saved" });
 
   } catch (error) {
     next(error);
