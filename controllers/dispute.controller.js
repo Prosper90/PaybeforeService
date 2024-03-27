@@ -78,7 +78,7 @@ exports.Createdispute = async (req, res, next) => {
       refund,
       owner,
     } = req.body;
-    const findDispute = await Dispute.findOne({ id: dispute_id });
+    const findDispute = await Dispute.findOne({ dispute_id: dispute_id });
     const findByPayId = await User.findOne(
       {
         paymentLink: {
@@ -91,7 +91,9 @@ exports.Createdispute = async (req, res, next) => {
     let dispute;
     let dispute_id_generated = generateRandomAlphaNumeric(8);
     let remind = false;
+    console.log("logger head oooo", req.body, findDispute, dispute_id);
     if (!findDispute && type !== "transaction") {
+      console.log("working it out")
       dispute = new Dispute({
         type: type,
         status: "pending",
@@ -104,6 +106,7 @@ exports.Createdispute = async (req, res, next) => {
 
       dispute.save();
     } else if (!findDispute && type === "transaction") {
+      console.log("findDispute, issue");
       dispute = new Dispute({
         type: type,
         status: "pending",
@@ -125,6 +128,7 @@ exports.Createdispute = async (req, res, next) => {
       findByPayId.paymentLink[0].linkID === pay_id &&
       type === "transaction"
     ) {
+      console.log("other type log");
       dispute = new Dispute({
         type: type,
         status: "pending",
@@ -140,6 +144,7 @@ exports.Createdispute = async (req, res, next) => {
 
       dispute.save();
     } else {
+      console.log("last one looking");
       dispute = await Dispute.findOneAndUpdate(
         { id: dispute_id },
         {
