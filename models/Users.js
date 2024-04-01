@@ -30,11 +30,11 @@ const linkGenerated = mongoose.Schema({
   account_number: { type: String },
   bank_name: { type: String },
   created: { type: Date, default: Date.now() },
-  payment_recieved: { type: Date},
+  payment_recieved: { type: Date },
   expired: { type: Date },
   amount_created: { type: Number },
   amount_paid: { type: Number, default: 0 },
-  sender_mail: {type: String},
+  sender_mail: { type: String },
   redeemCode: { type: String },
   isPaid: { type: String, default: "pending" }, //has values --> complete, incomplete, pending, failed and expired
   incompletePaymentCount: { type: Number, default: 0 },
@@ -132,6 +132,9 @@ userSchema.statics.login = async function (email, password) {
 
   if (!user) {
     throw new ErrorResponse("incorrect email", 401);
+  }
+  if (!user.isAcitve) {
+    throw new ErrorResponse("Account Deactivated contact Admin", 401);
   }
   // return next(new ErrorResponse("incorrect email", 401));
   const auth = await bcrypt.compare(password, user.password);
