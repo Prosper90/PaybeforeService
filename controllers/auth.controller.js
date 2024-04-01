@@ -15,8 +15,8 @@ const { createToken } = require("../utils/createTokens");
 //Resend Auth
 exports.RegisterWithOtp = async (req, res, next) => {
   const { email } = req.body;
-  
-  if(!email) return next(new ErrorResponse("add email to continue", 201));
+
+  if (!email) return next(new ErrorResponse("add email to continue", 201));
 
   const userCheck = await User.findOne({ email: req.body.email });
   if (userCheck) {
@@ -77,12 +77,12 @@ exports.VerifyOtpSignUp = async (req, res, next) => {
   // console.log(otpRecieved, "checkers");
   const user = await User.findOne({ otp: otpRecieved });
   if (!user) {
-    return next(new ErrorResponse("No User exist", 401));
+    return next(new ErrorResponse("Invalid otp sent", 401));
   }
 
   try {
     if (user.otp !== otpRecieved) {
-      return next(new ErrorResponse("Otp doesnt exist", 401));
+      return next(new ErrorResponse("Otp not valid", 401));
     }
 
     const currentTimestamp = Date.now(); // Current timestamp in seconds
