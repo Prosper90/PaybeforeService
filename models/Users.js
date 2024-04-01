@@ -133,7 +133,7 @@ userSchema.statics.login = async function (email, password) {
   if (!user) {
     throw new ErrorResponse("incorrect email", 401);
   }
-  if (!user.isAcitve) {
+  if (user.isAcitve === false) {
     throw new ErrorResponse("Account Deactivated contact Admin", 401);
   }
   // return next(new ErrorResponse("incorrect email", 401));
