@@ -118,8 +118,6 @@ exports.GetProfile = async (req, res, next) => {
   }
 };
 
-
-
 /**
  * this route is to update user profile
  * @param {*} req
@@ -259,6 +257,7 @@ exports.withdraw = async (req, res, next) => {
       "post",
       next
     );
+    console.log(responseTransfer, "checkings");
     if (!responseTransfer?.success) {
       //Refund user
       await User.findOneAndUpdate(
@@ -278,7 +277,7 @@ exports.withdraw = async (req, res, next) => {
       );
 
       return next(
-        new ErrorResponse(`Account ${responseTransfer.message}`, 401)
+        new ErrorResponse(`Account ${responseTransfer?.message}`, 401)
       );
     }
 

@@ -38,16 +38,23 @@ exports.VerifypaymentDetailsfromIDOrLink = async (req, res, next) => {
     if (paymentGet.isPaid === "complete")
       return next(new ErrorResponse("Payment is already completed.", 203));
 
-    if(paymentGet.isPaid === "incomplete") {
+    if (paymentGet.isPaid === "incomplete") {
       const amountsData = {
         amount_created: paymentGet.amount_created,
-        amount_paid: paymentGet.amount_paid
-      }
-      return res.status(203).json({ status: false, data: amountsData,  message: "Payment is incomplete" });
-    }  
+        amount_paid: paymentGet.amount_paid,
+      };
+      return res.status(203).json({
+        status: false,
+        data: amountsData,
+        message: "Payment is incomplete",
+      });
+    }
 
     //check if it has expired
-    if (Date.now() > Date.parse(paymentGet.expired) && paymentGet.incompletePaymentCount === 0)
+    if (
+      Date.now() > Date.parse(paymentGet.expired) &&
+      paymentGet.incompletePaymentCount === 0
+    )
       return next(new ErrorResponse("Payment is expired.", 203));
 
     // account_number: values.account_number,
@@ -62,7 +69,7 @@ exports.VerifypaymentDetailsfromIDOrLink = async (req, res, next) => {
       accountNumber: paymentGet.account_number,
       bank: paymentGet.bank_name,
       expiration: paymentGet.expired,
-      email: paymentGet?.sender_mail
+      email: paymentGet?.sender_mail,
     };
 
     res.status(200).json({ status: true, data: paymentObject });
@@ -111,12 +118,12 @@ exports.GeneratePaymentLink = async (req, res, next) => {
     return next(new ErrorResponse(responseLocal.message, 400));
   }
   const values = responseLocal.data;
-
+  console.log(values, "val val values");
   const appendId = generateRandomAlphaNumeric(6);
   //const base = `${req.protocol}://${req.hostname}`;
   //const link = `${base}/${appendId}`;
 
-  // 30 minutes in milliseconds 
+  // 30 minutes in milliseconds
   const thirtyMins = 30 * 60 * 1000;
   const Expire = Date.now() + thirtyMins; // Current timestamp + 30 minutes
 
@@ -166,7 +173,7 @@ exports.GeneratePaymentLink = async (req, res, next) => {
     if (paymentGenerated)
       res.status(200).json({
         status: true,
-        data: newPayment.linkID,
+        data: newPayment,
         values: values,
       });
   } catch (error) {
@@ -268,9 +275,8 @@ exports.RemakePayment = async (req, res, next) => {
  * @param {*} next
  */
 exports.SenderEmail = async (req, res, next) => {
-  const {email, payment_id} = req.body;
+  const { email, payment_id } = req.body;
   try {
-
     const user = await User.findOne(
       {
         "paymentLink.linkID": payment_id,
@@ -295,16 +301,13 @@ exports.SenderEmail = async (req, res, next) => {
       { new: true }
     );
     if (!updatePayment)
-    return next(new ErrorResponse("Email taking error", 400));
-
+      return next(new ErrorResponse("Email taking error", 400));
 
     res.status(200).json({ status: true, message: "email saved" });
-
   } catch (error) {
     next(error);
   }
-}
-
+};
 
 /**
  * Save Expired payment link
@@ -313,9 +316,8 @@ exports.SenderEmail = async (req, res, next) => {
  * @param {*} next
  */
 exports.ExpiredPayment = async (req, res, next) => {
-  const {email, payment_id} = req.body;
+  const { email, payment_id } = req.body;
   try {
-
     const user = await User.findOne(
       {
         "paymentLink.linkID": payment_id,
@@ -323,7 +325,6 @@ exports.ExpiredPayment = async (req, res, next) => {
       { "paymentLink.$": 1 }
     );
     if (!user) return next(new ErrorResponse("Id does not exist", 400));
-
 
     const updatePayment = await User.findOneAndUpdate(
       {
@@ -339,17 +340,16 @@ exports.ExpiredPayment = async (req, res, next) => {
       { new: true }
     );
     if (!updatePayment)
-    return next(new ErrorResponse("Expired route taking error", 400));
+      return next(new ErrorResponse("Expired route taking error", 400));
 
     //send message to email
     const info = `Payment Link ${payment_id} has expired and would no longer be active. do not send funds into the account`;
     sendPaymentInfo(info, email, next); //send message to their email
     res.status(200).json({ status: true, message: "Payment expired saved" });
-
   } catch (error) {
     next(error);
   }
-}
+};
 
 /**
  * Girl redeems her payment
