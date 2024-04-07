@@ -284,6 +284,8 @@ exports.withdraw = async (req, res, next) => {
     //get the values of the api result out
     const values = responseTransfer.data;
 
+    console.log(values, "checking values out ooooo");
+
     //update user recent_transaction
     await User.findOneAndUpdate(
       { _id: req.user._id },
