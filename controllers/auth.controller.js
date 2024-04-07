@@ -110,7 +110,7 @@ exports.CreateAccount = async (req, res, next) => {
 
   try {
     //Add checks for some other things
-
+    console.log(req.query, "prospeeeee");
     const userCheck = await User.findOne({ email: email });
     if (!userCheck) return next(new ErrorResponse("User not found", 401));
 
