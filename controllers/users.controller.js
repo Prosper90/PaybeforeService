@@ -245,7 +245,7 @@ exports.withdraw = async (req, res, next) => {
     const ref = `${req.user._id}${Math.floor(Math.random() * amount)}`;
     //request body for transfer
     const RequestDataTransfer = {
-      amount: amount * 100,
+      amount: Math.floor(amount * 100),
       bank_code: bank_code,
       account_number: account_number,
       narration: description,
