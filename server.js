@@ -90,41 +90,49 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
       //variables
       const returnTxStatus =
-        (user.paymentLink[0].incompletePaymentCount === 0) && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2))
-            ? "pending"
-          : (user.paymentLink[0].incompletePaymentCount !== 0 ) && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid
-            ? "pending"
-          : data.status !== "successful" ? 
-          "failed"
+        user.paymentLink[0].incompletePaymentCount === 0 &&
+        user.paymentLink[0].amount_created >
+          parseFloat((data.amount / 100).toFixed(2))
+          ? "pending"
+          : user.paymentLink[0].incompletePaymentCount !== 0 &&
+            user.paymentLink[0].amount_created >
+              parseFloat((data.amount / 100).toFixed(2)) +
+                user.paymentLink[0].amount_paid
+          ? "pending"
+          : data.status !== "successful"
+          ? "failed"
           : "success";
 
-          console.log(returnTxStatus, "tx status");
-          
+      console.log(returnTxStatus, "tx status");
 
-          // const isInComplete = (user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created >
-          //   parseFloat((data.amount / 100).toFixed(2)) ) || (user.paymentLink[0].incompletePaymentCount !== 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid); 
+      // const isInComplete = (user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created >
+      //   parseFloat((data.amount / 100).toFixed(2)) ) || (user.paymentLink[0].incompletePaymentCount !== 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid);
 
       const returnPaymentStatus =
-        (user.paymentLink[0].incompletePaymentCount === 0)
-          && user.paymentLink[0].amount_created >
-            parseFloat((data.amount / 100).toFixed(2))
-            ? "incomplete"
-          : (user.paymentLink[0].incompletePaymentCount !== 0) && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid
-            ? "incomplete"
-          : data.status !== "successful" ? "failed"
+        user.paymentLink[0].incompletePaymentCount === 0 &&
+        user.paymentLink[0].amount_created >
+          parseFloat((data.amount / 100).toFixed(2))
+          ? "incomplete"
+          : user.paymentLink[0].incompletePaymentCount !== 0 &&
+            user.paymentLink[0].amount_created >
+              parseFloat((data.amount / 100).toFixed(2)) +
+                user.paymentLink[0].amount_paid
+          ? "incomplete"
+          : data.status !== "successful"
+          ? "failed"
           : "complete";
 
-          console.log(returnPaymentStatus, "payments status");
+      console.log(returnPaymentStatus, "payments status");
 
       const amountPaid =
         user.paymentLink[0].incompletePaymentCount === 0
           ? parseFloat((data.amount / 100).toFixed(2))
           : parseFloat((data.amount / 100).toFixed(2)) +
             user.paymentLink[0].amount_paid;
-      
-      console.log(amountPaid, "amount paid");
 
-      console.log(user.paymentLink[0].incompletePaymentCount, "opening here sharp");
+      // console.log(amountPaid, "amount paid");
+
+      // console.log(user.paymentLink[0].incompletePaymentCount, "opening here sharp");
 
       // console.log(data.amount, "checking the amount sent");
       //update a user
@@ -135,8 +143,11 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         },
         {
           $inc: {
-            "balances.pending_wallet": parseFloat((data.amount / 100).toFixed(2)),
-            "paymentLink.$.incompletePaymentCount": returnPaymentStatus === "incomplete" && 1,
+            "balances.pending_wallet": parseFloat(
+              (data.amount / 100).toFixed(2)
+            ),
+            "paymentLink.$.incompletePaymentCount":
+              returnPaymentStatus === "incomplete" && 1,
           },
           $set: {
             "paymentLink.$.isPaid": returnPaymentStatus,
@@ -185,7 +196,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           amount: amountPaid,
         },
         status:
-        returnPaymentStatus === "complete"
+          returnPaymentStatus === "complete"
             ? "success"
             : returnPaymentStatus === "incomplete"
             ? "incomplete"
@@ -204,11 +215,11 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       } else {
         emitData.reason = returnPaymentStatus;
       }
-      console.log(`Pay${data.account_id}`, emitData);
+      // console.log(`Pay${data.account_id}`, emitData);
 
       io.emit(`Pay${data.account_id}`, emitData);
 
-      console.log("after emmiting all done");
+      // console.log("after emmiting all done");
       //send push notification
       // notificationStatus = sendNotification(
       //   "Deposit",
@@ -224,7 +235,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       const info = `
         ${message}
         Reedem code ${returnPaymentStatus === "complete" ? returnedData : 0}
-      `
+      `;
       sendPaymentInfo(info, user.paymentLink[0].sender_mail, next); //send message to their email
       //return api call
       return res.status(200).json({
@@ -240,7 +251,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       // const tx = await Transaction.findOne({ track_id: data.reference });
       // const user = await User.findOne({ _id: tx?.sender.wallet });
       // if (!user) return next(new ErrorResponse("No such user found", 401));
-      console.log(data.status, "checking something");
+      // console.log(data.status, "checking something");
       //update created transaction
       await Transaction.findOneAndUpdate(
         { track_id: data.reference },

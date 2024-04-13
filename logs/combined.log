@@ -713,3 +713,14 @@
 {"level":"info","message":"GET /PayBeforeService/v1/referral/getRefs","timestamp":"2024-04-05T18:09:56.650Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/referral/getRefs","timestamp":"2024-04-05T18:38:28.968Z"}
 {"level":"info","message":"GET /PayBeforeService/v1/user/getProfile","timestamp":"2024-04-05T18:38:29.349Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/login","timestamp":"2024-04-11T14:36:25.880Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2024-04-11T14:38:35.483Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/verifyOtpReg","timestamp":"2024-04-11T14:39:19.620Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/signup/?ref=589611","timestamp":"2024-04-11T14:40:12.939Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/login","timestamp":"2024-04-11T14:43:49.020Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/user/withdraw","timestamp":"2024-04-11T14:44:59.358Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/user/withdraw","timestamp":"2024-04-11T14:52:42.139Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/user/withdraw","timestamp":"2024-04-11T14:57:14.158Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/user/withdraw","timestamp":"2024-04-11T15:01:38.379Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/user/withdraw","timestamp":"2024-04-11T15:07:41.897Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/user/withdraw","timestamp":"2024-04-13T01:40:26.854Z"}

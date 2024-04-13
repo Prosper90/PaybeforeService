@@ -9,11 +9,27 @@ const BankSchema = mongoose.Schema({
   acc_Number: { type: String },
 });
 
-const balanceSchema = mongoose.Schema({
-  main_wallet: { type: Number },
-  pending_wallet: { type: Number },
-  refferal_wallet: { type: Number },
-});
+const balanceSchema = mongoose.Schema(
+  {
+    main_wallet: { type: Number },
+    pending_wallet: { type: Number },
+    refferal_wallet: { type: Number },
+  },
+  { _id: false } // Specify _id: false to prevent MongoDB from adding _id to the object
+);
+
+const withdrawSchema = mongoose.Schema(
+  {
+    withrawal_requested: { type: Boolean, default: true },
+    withdrawal_Amount: { type: Number },
+    bank_name: { type: String },
+    account_number: { type: String },
+    account_name: { type: String },
+    track_id: { type: String },
+    status: { type: String },
+  }
+  // { _id: false } // Specify _id: false to prevent MongoDB from adding _id to the object
+);
 
 const beneficiariesSchema = mongoose.Schema({
   bank_Name: { type: String },
@@ -71,6 +87,7 @@ const userSchema = mongoose.Schema(
       validate: [isEmail, "Please enter a valid email"],
     },
     balances: balanceSchema,
+    withdrawalIssued: [withdrawSchema],
     password: {
       type: String,
       minlength: [8, "Minimum password length is 8 characters"],
