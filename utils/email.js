@@ -36,12 +36,80 @@ const sendEmail = (otp, reciepient, next) => {
             width: 100vw;
             height: 100vh;
           }
+
+          .container {
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            width: 100%; 
+            height: 100%; 
+            font-size: 1.125rem;
+            line-height: 1.75rem; 
+            background: #7746C1;
+          }
+
+          .header_logo {
+            margin-bottom: 0.75rem; 
+            font-size: 1.125rem;
+            line-height: 1.75rem; 
+            color: #fff;
+          }
+          .main_container {
+            display: flex; 
+            padding: 1rem; 
+            flex-direction: column; 
+            gap: 0.75rem; 
+            justify-content: center; 
+            align-items: center; 
+            border-radius: 0.25rem; 
+            background: #fff;
+            width: 70%;
+            height: 70%;
+            color: #4A4A4A;
+          }
+
+          .main_container_cover {
+            position: relative; 
+            margin-top: 0.75rem; 
+          }
+
+          .info_container {
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+          }
+
+          .title_info {
+            font-weight: 700; 
+          }
+
+          .extra_info {
+            font-size: 0.75rem;
+            line-height: 1rem; 
+            font-weight: 600; 
+            text-align: center; 
+          }
+
+          .main_info_show {
+            font-size: 1.5rem;
+            line-height: 2rem; 
+            font-weight: 700; 
+          }
+
+          .details_below {
+            margin-top: 1.25rem; 
+            font-size: 1.5rem;
+            line-height: 2rem; 
+            font-weight: 600;
+          }
          </style>
         <body>
-           <div class="flex flex-col bg-[#7746C1] justify-center items-center w-full h-full text-lg ">
-               <div class="text-[#fff] text-semibold text-lg mb-3">PayBeforeService</div>
-               <div class="bg-[#fff] rounded p-4 w-[70%] h-[70%] flex flex-col justify-center items-center gap-3 text-[#4A4A4A]">
-                   <div class="mt-3 relative">
+           <div class="container">
+               <div class="header_logo">PayBeforeService</div>
+               <div class="main_container">
+                   <div class="main_container_cover">
                     <svg width="200" height="200" viewBox="0 0 612 490" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <rect width="612" height="490" fill="url(#pattern0_1273_161)"/>
                       <defs>
@@ -52,13 +120,13 @@ const sendEmail = (otp, reciepient, next) => {
                       </defs>
                       </svg>                
                    </div>
-                   <div class="flex flex-col justify-center items-center">
-                      <div class="font-bold">Here Is Your One Time Password</div>
-                      <small class="font-semibold text-xs text-center">Use this code to verify your account</small>
+                   <div class="info_container">
+                      <div class="title_info">Here Is Your One Time Password</div>
+                      <small class="extra_info">Use this code to verify your account</small>
                    </div>
-                   <div class="tracking-[23px] text-2xl font-bold">${otp}</div>
+                   <div class="main_info_show">${otp}</div>
                </div>
-               <div class="text-[#A57EDF] text-md font-semibold mt-5">Contact us</div>
+               <div class="details_below">Contact us</div>
            </div>
         </body>
       </html>      
@@ -136,21 +204,89 @@ const sendPaymentInfo = (info, reciepient, next) => {
           <title>Otp/Email</title>
           <script src="https://cdn.tailwindcss.com"></script>
         </head>
-         <style>
-          *{
-            padding: 0px;
-            margin: 0px;
-          }
-          body {
-            width: 100vw;
-            height: 100vh;
-          }
-         </style>
+          <style>
+            *{
+              padding: 0px;
+              margin: 0px;
+            }
+            body {
+              width: 100vw;
+              height: 100vh;
+            }
+
+            .container {
+              display: flex; 
+              flex-direction: column; 
+              justify-content: center; 
+              align-items: center; 
+              width: 100%; 
+              height: 100%; 
+              font-size: 1.125rem;
+              line-height: 1.75rem; 
+              background: #7746C1;
+            }
+
+            .header_logo {
+              margin-bottom: 0.75rem; 
+              font-size: 1.125rem;
+              line-height: 1.75rem; 
+              color: #fff;
+            }
+            .main_container {
+              display: flex; 
+              padding: 1rem; 
+              flex-direction: column; 
+              gap: 0.75rem; 
+              justify-content: center; 
+              align-items: center; 
+              border-radius: 0.25rem; 
+              background: #fff;
+              width: 70%;
+              height: 70%;
+              color: #4A4A4A;
+            }
+
+            .main_container_cover {
+              position: relative; 
+              margin-top: 0.75rem; 
+            }
+
+            .info_container {
+              display: flex; 
+              flex-direction: column; 
+              justify-content: center; 
+              align-items: center; 
+            }
+
+            .title_info {
+              font-weight: 700; 
+            }
+
+            .extra_info {
+              font-size: 0.75rem;
+              line-height: 1rem; 
+              font-weight: 600; 
+              text-align: center; 
+            }
+
+            .main_info_show {
+              font-size: 1.5rem;
+              line-height: 2rem; 
+              font-weight: 700; 
+            }
+
+            .details_below {
+              margin-top: 1.25rem; 
+              font-size: 1.5rem;
+              line-height: 2rem; 
+              font-weight: 600;
+            }
+          </style>
         <body>
-           <div class="flex flex-col bg-[#7746C1] justify-center items-center w-full h-full text-lg ">
-               <div class="text-[#fff] text-semibold text-lg mb-3">PayBeforeService</div>
-               <div class="bg-[#fff] rounded p-4 w-[70%] h-[70%] flex flex-col justify-center items-center gap-3 text-[#4A4A4A]">
-                   <div class="mt-3 relative">
+           <div class="container">
+               <div class="header_logo">PayBeforeService</div>
+               <div class="main_container">
+                   <div class="main_container_cover">
                       <svg
                       width="170"
                       height="170"
@@ -181,13 +317,13 @@ const sendPaymentInfo = (info, reciepient, next) => {
                       />
                     </svg>                
                    </div>
-                   <div class="flex flex-col justify-center items-center">
-                      <div class="font-bold">Payment Recieved</div>
-                      <small class="font-semibold text-xs text-center">Attached below is the redeem code for this payment</small>
+                   <div class="info_container">
+                      <div class="title_info">Payment Recieved</div>
+                      <small class="extra_info">Attached below is the redeem code for this payment</small>
                    </div>
-                   <div class="tracking-[5px] text-2xl font-bold">${info}</div>
+                   <div class="main_info_show">${info}</div>
                </div>
-               <div class="text-[#A57EDF] text-md font-semibold mt-5">Contact us</div>
+               <div class="details_below">Contact us</div>
            </div>
         </body>
       </html>      
