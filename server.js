@@ -233,10 +233,11 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
       //Send email to payee
       const info = `
-        ${message}
-        Reedem code ${returnPaymentStatus === "complete" ? returnedData : 0}
+        ${returnPaymentStatus === "complete" ? returnedData : 0}
       `;
-      sendPaymentInfo(info, user.paymentLink[0].sender_mail, next); //send message to their email
+      if (returnPaymentStatus === "complete") {
+        sendPaymentInfo(info, user.paymentLink[0].sender_mail, next); //send message to their email
+      }
       //return api call
       return res.status(200).json({
         status: true,

@@ -209,7 +209,7 @@ exports.withdraw = async (req, res, next) => {
       return next(new ErrorResponse("insufficient funds", 401));
 
     // Debit user
-    await User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id },
       {
         $inc: { "balances.main_wallet": -amount }, // Decrement the balance
@@ -363,7 +363,13 @@ exports.withdraw = async (req, res, next) => {
     //   transactionId: transaction._id,
     // });
     // await newNotify.save();
-    return res.status(200).json({ status: true, data: values });
+    return res
+      .status(200)
+      .json({
+        status: true,
+        data: updatedUser,
+        message: "withdrawal successfull",
+      });
   } catch (error) {
     next(error);
   }
