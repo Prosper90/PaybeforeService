@@ -724,3 +724,8 @@
 {"level":"info","message":"POST /PayBeforeService/v1/user/withdraw","timestamp":"2024-04-11T15:01:38.379Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/user/withdraw","timestamp":"2024-04-11T15:07:41.897Z"}
 {"level":"info","message":"POST /PayBeforeService/v1/user/withdraw","timestamp":"2024-04-13T01:40:26.854Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2024-04-15T13:27:25.593Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2024-04-15T14:18:00.740Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2024-04-15T14:19:08.305Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2024-04-15T14:21:28.419Z"}
+{"level":"info","message":"POST /PayBeforeService/v1/auth/sendOtp","timestamp":"2024-04-15T14:41:12.238Z"}
