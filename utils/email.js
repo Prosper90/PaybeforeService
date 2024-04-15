@@ -36,7 +36,7 @@ const sendEmail = (otp, reciepient, next) => {
                 <table style="width: 70%; background-color: #fff; border-radius: 0.25rem; color: #4A4A4A; padding: 1rem; margin: 0 auto;">
                   <tr>
                     <td style="text-align: center;">
-                      <img src="${req.protocol}://${req.host}${req.path}/templateImg/email.svg" alt="" style="max-width: 100%; height: auto; display: block; margin: 0.75rem auto 0;">
+                      <img src="https://paybeforeservice.onrender.com/utils/templateImg/email.svg" alt="" style="max-width: 100%; height: auto; display: block; margin: 0.75rem auto 0;">
                     </td>
                   </tr>
                   <tr>
