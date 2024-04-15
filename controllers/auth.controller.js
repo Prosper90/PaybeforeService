@@ -35,9 +35,9 @@ exports.RegisterWithOtp = async (req, res, next) => {
     });
     user = await user.save();
 
-    const sent = await sendOtp("email", otp, req.body.email, next);
+    await sendOtp("email", otp, req.body.email, next);
     // console.log(sent, "checking upon depoying");
-    if (!sent.status) return next(new ErrorResponse(sent.message, 401));
+    // if (!sent.status) return next(new ErrorResponse(sent.message, 401));
     return res.status(200).json({ status: true, message: "otp sent" });
   } catch (error) {
     next(error);
@@ -60,8 +60,8 @@ exports.ResendOtp = async (req, res, next) => {
       { $set: { otp: otp, otpExpire: Expire } }
     );
 
-    const sent = await sendOtp("email", otp, req.body.email, next);
-    if (!sent.status) return next(new ErrorResponse(sent.message, 401));
+    await sendOtp("email", otp, req.body.email, next);
+    // if (!sent.status) return next(new ErrorResponse(sent.message, 401));
 
     res.status(200).json({ status: true, message: "otp Resent" });
   } catch (error) {
