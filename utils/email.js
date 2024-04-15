@@ -42,10 +42,10 @@ const sendEmail = (otp, reciepient, next) => {
           </svg>
             </div>
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-              <div style="font-weight: 700;">Payment Recieved</div>
-              <small style="font-size: 0.75rem; line-height: 1rem; font-weight: 600; text-align: center;">Attached below is the redeem code for this payment</small>
+              <div style="font-weight: 700;">Otp Confirmation</div>
+              <small style="font-size: 0.75rem; line-height: 1rem; font-weight: 600; text-align: center;">use the otp below to verify your account</small>
             </div>
-            <div style="font-size: 1.5rem; line-height: 2rem; font-weight: 700;">${info}</div>
+            <div style="font-size: 1.5rem; line-height: 2rem; font-weight: 700;">${otp}</div>
           </div>
           <div style="margin-top: 1.25rem; font-size: 1.5rem; line-height: 2rem; font-weight: 600;">Contact us</div>
         </div>
