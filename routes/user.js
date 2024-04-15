@@ -14,6 +14,8 @@ router.put("/forgetPasswordUpdate", userController.ForgetPasswordUpdate);
 
 router.put("/updatePassword", requireAuth, userController.UpdatePassword);
 
+router.put("/UpdatePin", requireAuth, userController.UpdatePin);
+
 router.get("/getProfile", requireAuth, userController.GetProfile);
 
 // router.put(

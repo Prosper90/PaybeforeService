@@ -24,7 +24,7 @@ exports.ForgetPasswordRequest = async (req, res, next) => {
     id: user._id,
   };
   const token = jwt.sign(payload, secret, { expiresIn: "1h" }); // Set the expiration time as needed
-  const link = `http://localhost:5173/reset-password/?token=${token}&user=${user._id}`;
+  const link = `${req.protocol}://${req.host}/reset-password/?token=${token}&user=${user._id}`;
   sendPasswordEmail(link, email);
   res.status(200).json({ status: true, message: "email sent" });
 };
@@ -93,7 +93,45 @@ exports.UpdatePassword = async (req, res, next) => {
     );
 
     if (updatePassword)
-      res.status(200).json({ status: true, data: updatePassword });
+      res
+        .status(200)
+        .json({
+          status: true,
+          data: updatePassword,
+          message: "Password updated",
+        });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * this is to update the user pin
+ *
+ */
+exports.UpdatePin = async (req, res, next) => {
+  const { old_pin, new_pin } = req.body;
+
+  try {
+    const checkUser = await User.findById({ _id: req.user._id });
+    if (!checkUser) return next(new ErrorResponse("No user found", 401));
+    // compare passwords
+    const comparepin = old_pin === checkUser.pin;
+    if (!comparepin)
+      return next(new ErrorResponse("Old pin doesnt match", 401));
+
+    const updatePin = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      {
+        $set: { pin: new_pin },
+      },
+      { new: true }
+    );
+
+    if (updatePin)
+      res
+        .status(200)
+        .json({ status: true, data: updatePin, message: "Pin updated" });
   } catch (error) {
     next(error);
   }
@@ -134,20 +172,24 @@ exports.updateProfile = async (req, res, next) => {
   var objForUpdate = {};
 
   if (req.body.email) objForUpdate.email = req.body.email;
-  if (req.body.first_name) objForUpdate.first_name = req.body.first_name;
-  if (req.body.last_name) objForUpdate.last_name = req.body.last_name;
-  if (req.body.bank_name) objForUpdate.bank_info.bank_name = req.body.bank_name;
-  if (req.body.account_number)
-    objForUpdate.bank_info.bank_name = req.body.bank_name;
+  if (req.body.username) objForUpdate.username = req.body.username;
+  if (req.body.full_name) objForUpdate.full_name = req.body.full_name;
+  if (req.body.address) objForUpdate.address = req.body.address;
+  if (req.body.city) objForUpdate.city = req.body.city;
+  if (req.body.state) objForUpdate.state = req.body.state;
+  if (req.body.location) objForUpdate.location = req.body.location;
+  if (req.body.phone_number) objForUpdate.phone_number = req.body.phone_number;
 
   try {
-    await User.findOneAndUpdate(
+    const updateduser = await User.findOneAndUpdate(
       { _id: req.user._id },
       { $set: objForUpdate },
       { new: true }
     );
 
-    res.status(200).json({ status: true, message: "Customer updated" });
+    res
+      .status(200)
+      .json({ status: true, data: updateduser, message: "Profile updated" });
   } catch {
     next(error);
   }
@@ -363,13 +405,11 @@ exports.withdraw = async (req, res, next) => {
     //   transactionId: transaction._id,
     // });
     // await newNotify.save();
-    return res
-      .status(200)
-      .json({
-        status: true,
-        data: updatedUser,
-        message: "withdrawal successfull",
-      });
+    return res.status(200).json({
+      status: true,
+      data: updatedUser,
+      message: "withdrawal successfull",
+    });
   } catch (error) {
     next(error);
   }
