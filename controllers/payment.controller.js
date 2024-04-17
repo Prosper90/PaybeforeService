@@ -113,12 +113,12 @@ exports.GeneratePaymentLink = async (req, res, next) => {
     "post",
     next
   );
-  console.log(responseLocal, "lets see again");
+  // console.log(responseLocal, "lets see again");
   if (!responseLocal?.success) {
     return next(new ErrorResponse(responseLocal.message, 400));
   }
   const values = responseLocal.data;
-  console.log(values, "val val values");
+  // console.log(values, "val val values");
   const appendId = generateRandomAlphaNumeric(6);
   //const base = `${req.protocol}://${req.hostname}`;
   //const link = `${base}/${appendId}`;
@@ -335,6 +335,19 @@ exports.ExpiredPayment = async (req, res, next) => {
         $set: {
           "paymentLink.$.isPaid": "expired",
           "paymentLink.$.status": "expired",
+        },
+      },
+      { new: true }
+    );
+    //update transaction too
+    await Transaction.findOneAndUpdate(
+      {
+        track_id: user.paymentLink[0].linkID,
+      },
+      {
+        $set: {
+          "payment.isPaid": "expired",
+          status: "expired",
         },
       },
       { new: true }
