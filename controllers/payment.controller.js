@@ -57,6 +57,10 @@ exports.VerifypaymentDetailsfromIDOrLink = async (req, res, next) => {
     )
       return next(new ErrorResponse("Payment is expired.", 203));
 
+    //check if it is cancelled
+    if (paymentGet.status === "cancelled")
+      return next(new ErrorResponse("Payment has been Cancelled.", 203));
+
     // account_number: values.account_number,
     // bank_name: values.bank_name,
     // account_name: values.name,
