@@ -125,7 +125,7 @@ exports.GeneratePaymentLink = async (req, res, next) => {
 
   // 30 minutes in milliseconds
   // const thirtyMins = 30 * 60 * 1000;
-  const twoMins = 30 * 60 * 1000; //for testing
+  const twoMins = 2 * 60 * 1000; //for testing
   const Expire = Date.now() + twoMins; // Current timestamp + 30 minutes
 
   try {
