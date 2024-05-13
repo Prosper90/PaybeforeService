@@ -444,7 +444,7 @@ exports.ReedemPayment = async (req, res, next) => {
       );
 
       const bonus = new Bonus({
-        type: "Referral Bonus",
+        type: "Referral",
         status: "success",
         amount: (3 * check.paymentLink[0].amount_paid) / 100,
         owner: findReferer._id,

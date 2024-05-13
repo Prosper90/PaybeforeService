@@ -93,13 +93,11 @@ exports.UpdatePassword = async (req, res, next) => {
     );
 
     if (updatePassword)
-      res
-        .status(200)
-        .json({
-          status: true,
-          data: updatePassword,
-          message: "Password updated",
-        });
+      res.status(200).json({
+        status: true,
+        data: updatePassword,
+        message: "Password updated",
+      });
   } catch (error) {
     next(error);
   }
@@ -261,7 +259,7 @@ exports.withdraw = async (req, res, next) => {
 
     //We create a transaction
     const transaction = new Transaction({
-      type: "withdrawal",
+      type: "Withdrawal",
       withdrawal: {
         amount: amount,
         sender: req.user._id,

@@ -36,6 +36,8 @@ const beneficiariesSchema = mongoose.Schema({
   bank_Code: { type: String },
   account_Number: { type: String },
   account_Name: { type: String },
+  img_url_web: { type: String },
+  img_url_phone: { type: String },
 });
 
 const linkGenerated = mongoose.Schema({
@@ -164,17 +166,60 @@ userSchema.statics.login = async function (email, password) {
 };
 
 //Method to handle recent transactions
+// userSchema.pre("findOneAndUpdate", async function () {
+//   const data = this.getQuery(); // Access the query to get the user data
+//   const dataRecenttx = this.getUpdate();
+//   const user = await this.model.findOne(data);
+//   if (dataRecenttx.$push && dataRecenttx.$push.recent_transactions) {
+//     if (user && user.recent_transactions) {
+//       const maxLength = 5;
+//       if (user.recent_transactions.length === maxLength) {
+//         await this.model.updateOne(
+//           { _id: user._id },
+//           { $pop: { recent_transactions: -1 } }
+//         );
+//       }
+//     }
+//   }
+// });
+
+//new one for recent transactions
 userSchema.pre("findOneAndUpdate", async function () {
   const data = this.getQuery(); // Access the query to get the user data
   const dataRecenttx = this.getUpdate();
   const user = await this.model.findOne(data);
+
   if (dataRecenttx.$push && dataRecenttx.$push.recent_transactions) {
     if (user && user.recent_transactions) {
       const maxLength = 5;
-      if (user.recent_transactions.length === maxLength) {
+      const recentTransactions = dataRecenttx.$push.recent_transactions;
+
+      // Check if the array needs to be trimmed
+      if (
+        user.recent_transactions.length + recentTransactions.length >
+        maxLength
+      ) {
+        const numToRemove =
+          user.recent_transactions.length +
+          recentTransactions.length -
+          maxLength;
         await this.model.updateOne(
           { _id: user._id },
-          { $pop: { recent_transactions: -1 } }
+          {
+            $push: {
+              recent_transactions: { $each: recentTransactions, $position: 0 },
+            },
+            $pop: { recent_transactions: numToRemove },
+          }
+        );
+      } else {
+        await this.model.updateOne(
+          { _id: user._id },
+          {
+            $push: {
+              recent_transactions: { $each: recentTransactions, $position: 0 },
+            },
+          }
         );
       }
     }
