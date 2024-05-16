@@ -1,4 +1,5 @@
 const { User } = require("../models/Users");
+const ErrorResponse = require("../utils/errorResponse");
 
 //Create Beneficiaries
 exports.CreateBene = async (req, res, next) => {
