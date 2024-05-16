@@ -160,7 +160,6 @@ exports.GeneratePaymentLink = async (req, res, next) => {
       status: "pending",
       track_id: appendId,
     });
-
     await tx.save();
 
     const paymentGenerated = await User.findOneAndUpdate(
@@ -168,13 +167,13 @@ exports.GeneratePaymentLink = async (req, res, next) => {
       {
         $push: {
           paymentLink: newPayment,
-          recent_transactions: tx._id,
+          recent_transactions: tx._id, // Push the _id of the newly created transaction
         },
       },
       { new: true }
     );
-    //create a transaction
 
+    //create a transaction
     if (paymentGenerated)
       res.status(200).json({
         status: true,
