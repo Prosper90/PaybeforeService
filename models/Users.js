@@ -166,22 +166,22 @@ userSchema.statics.login = async function (email, password) {
 };
 
 //Method to handle recent transactions
-// userSchema.pre("findOneAndUpdate", async function () {
-//   const data = this.getQuery(); // Access the query to get the user data
-//   const dataRecenttx = this.getUpdate();
-//   const user = await this.model.findOne(data);
-//   if (dataRecenttx.$push && dataRecenttx.$push.recent_transactions) {
-//     if (user && user.recent_transactions) {
-//       const maxLength = 5;
-//       if (user.recent_transactions.length === maxLength) {
-//         await this.model.updateOne(
-//           { _id: user._id },
-//           { $pop: { recent_transactions: -1 } }
-//         );
-//       }
-//     }
-//   }
-// });
+userSchema.pre("findOneAndUpdate", async function () {
+  const data = this.getQuery(); // Access the query to get the user data
+  const dataRecenttx = this.getUpdate();
+  const user = await this.model.findOne(data);
+  if (dataRecenttx.$push && dataRecenttx.$push.recent_transactions) {
+    if (user && user.recent_transactions) {
+      const maxLength = 5;
+      if (user.recent_transactions.length === maxLength) {
+        await this.model.updateOne(
+          { _id: user._id },
+          { $pop: { recent_transactions: -1 } }
+        );
+      }
+    }
+  }
+});
 
 //new one for recent transactions
 // userSchema.pre("findOneAndUpdate", async function () {
@@ -226,53 +226,53 @@ userSchema.statics.login = async function (email, password) {
 //   }
 // });
 
-userSchema.pre("findOneAndUpdate", async function () {
-  const data = this.getQuery(); // Access the query to get the user data
-  const dataRecenttx = this.getUpdate();
-  const user = await this.model.findOne(data);
+// userSchema.pre("findOneAndUpdate", async function () {
+//   const data = this.getQuery(); // Access the query to get the user data
+//   const dataRecenttx = this.getUpdate();
+//   const user = await this.model.findOne(data);
 
-  if (dataRecenttx.$push && dataRecenttx.$push.recent_transactions) {
-    if (user && user.recent_transactions) {
-      const maxLength = 5;
-      const recentTransactions = dataRecenttx.$push.recent_transactions.map(
-        (tx) => ({
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Transaction",
-          _id: tx,
-        })
-      );
+//   if (dataRecenttx.$push && dataRecenttx.$push.recent_transactions) {
+//     if (user && user.recent_transactions) {
+//       const maxLength = 5;
+//       const recentTransactions = dataRecenttx.$push.recent_transactions.map(
+//         (tx) => ({
+//           type: mongoose.Schema.Types.ObjectId,
+//           ref: "Transaction",
+//           _id: tx,
+//         })
+//       );
 
-      // Check if the array needs to be trimmed
-      if (
-        user.recent_transactions.length + recentTransactions.length >
-        maxLength
-      ) {
-        const numToRemove =
-          user.recent_transactions.length +
-          recentTransactions.length -
-          maxLength;
-        await this.model.updateOne(
-          { _id: user._id },
-          {
-            $push: {
-              recent_transactions: { $each: recentTransactions, $position: 0 },
-            },
-            $pop: { recent_transactions: numToRemove },
-          }
-        );
-      } else {
-        await this.model.updateOne(
-          { _id: user._id },
-          {
-            $push: {
-              recent_transactions: { $each: recentTransactions, $position: 0 },
-            },
-          }
-        );
-      }
-    }
-  }
-});
+//       // Check if the array needs to be trimmed
+//       if (
+//         user.recent_transactions.length + recentTransactions.length >
+//         maxLength
+//       ) {
+//         const numToRemove =
+//           user.recent_transactions.length +
+//           recentTransactions.length -
+//           maxLength;
+//         await this.model.updateOne(
+//           { _id: user._id },
+//           {
+//             $push: {
+//               recent_transactions: { $each: recentTransactions, $position: 0 },
+//             },
+//             $pop: { recent_transactions: numToRemove },
+//           }
+//         );
+//       } else {
+//         await this.model.updateOne(
+//           { _id: user._id },
+//           {
+//             $push: {
+//               recent_transactions: { $each: recentTransactions, $position: 0 },
+//             },
+//           }
+//         );
+//       }
+//     }
+//   }
+// });
 
 userSchema.virtual("id").get(function () {
   return this._id.toHexString();
