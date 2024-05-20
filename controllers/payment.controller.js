@@ -428,28 +428,29 @@ exports.ReedemPayment = async (req, res, next) => {
       const findReferer = await User.findOne({
         userReferralID: req.user.referer,
       });
-
-      await User.findOneAndUpdate(
-        { _id: findReferer._id },
-        {
-          $inc: {
-            "balances.refferal_wallet":
-              (3 * check.paymentLink[0].amount_paid) / 100,
-            "balances.main_wallet":
-              (3 * check.paymentLink[0].amount_paid) / 100,
+      if (findReferer) {
+        await User.findOneAndUpdate(
+          { _id: findReferer._id },
+          {
+            $inc: {
+              "balances.refferal_wallet":
+                (3 * check.paymentLink[0].amount_paid) / 100,
+              "balances.main_wallet":
+                (3 * check.paymentLink[0].amount_paid) / 100,
+            },
           },
-        },
-        { new: true }
-      );
+          { new: true }
+        );
 
-      const bonus = new Bonus({
-        type: "Referral",
-        status: "success",
-        amount: (3 * check.paymentLink[0].amount_paid) / 100,
-        owner: findReferer._id,
-      });
+        const bonus = new Bonus({
+          type: "Referral",
+          status: "success",
+          amount: (3 * check.paymentLink[0].amount_paid) / 100,
+          owner: findReferer._id,
+        });
 
-      await bonus.save();
+        await bonus.save();
+      }
     }
 
     const settledObject = {
