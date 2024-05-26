@@ -21,7 +21,7 @@ exports.GetAllRefs = async (req, res, next) => {
 
     const allRefs = await Bonus.find({
       owner: req.user._id,
-    });
+    }).sort({ createdAt: -1 });
     // const refs = await Bonus.find({ owner: req.user._id });
     const refs = await Bonus.find({ owner: req.user._id })
       .sort({ createdAt: -1 })

@@ -20,7 +20,7 @@ exports.GetAllTransactions = async (req, res, next) => {
 
     const allTx = await Transaction.find({
       owner: req.user._id,
-    });
+    }).sort({ createdAt: -1 });
 
     const transactions = await Transaction.find({ owner: req.user._id })
       .sort({ createdAt: -1 })
