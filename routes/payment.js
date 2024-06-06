@@ -20,5 +20,11 @@ router.post("/expired_payment", paymentController.ExpiredPayment);
 router.post("/payToLink", paymentController.MakePaymentToLink);
 router.post("/redeemPayment", requireAuth, paymentController.ReedemPayment);
 router.post("/cancelPayment", requireAuth, paymentController.CancelPayment);
+//check repayment
+router.get(
+  "/checkRepayment/:PayId",
+  requireAuth,
+  paymentController.CheckRepayment
+);
 
 module.exports = router;

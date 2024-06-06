@@ -103,7 +103,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           ? "failed"
           : "success";
 
-      console.log(returnTxStatus, "tx status");
+      // console.log(returnTxStatus, "tx status");
 
       // const isInComplete = (user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created >
       //   parseFloat((data.amount / 100).toFixed(2)) ) || (user.paymentLink[0].incompletePaymentCount !== 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid);
@@ -122,7 +122,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           ? "failed"
           : "complete";
 
-      console.log(returnPaymentStatus, "payments status");
+      // console.log(returnPaymentStatus, "payments status");
 
       const amountPaid =
         user.paymentLink[0].incompletePaymentCount === 0
@@ -136,6 +136,13 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
 
       // console.log(data.amount, "checking the amount sent");
       //update a user
+      // 24 hours wait if the payment is cancelled
+      let expire;
+      if (returnPaymentStatus === "incomplete") {
+        const twentyMins = 20 * 60 * 1000;
+        expire = Date.now() + twentyMins; // Current timestamp + 30 minutes
+      }
+
       await User.findOneAndUpdate(
         {
           _id: user._id,
@@ -153,7 +160,10 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
             "paymentLink.$.isPaid": returnPaymentStatus,
             "paymentLink.$.redeemCode": redeemCode,
             "paymentLink.$.amount_paid": amountPaid,
-            "paymentLink.$.payment_received": Date.now(), // Corrected spelling
+            "paymentLink.$.payment_received": Date.now(),
+            ...(returnPaymentStatus === "incomplete" && {
+              "paymentLink.$.expired": expire,
+            }),
           },
         },
         { new: true }
@@ -171,6 +181,9 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
               account_number: data.meta_data.sender_account_number,
             },
             "payment.amount_paid": amountPaid,
+            ...(returnPaymentStatus === "incomplete" && {
+              "payment.expired": expire,
+            }),
           },
         },
         { new: true }

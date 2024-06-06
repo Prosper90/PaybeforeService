@@ -580,3 +580,28 @@ exports.CancelPayment = async (req, res, next) => {
     next(error);
   }
 };
+
+/*
+ system checks repayment 
+*/
+
+exports.CheckRepayment = async (req, res, next) => {
+  try {
+    const { PayId } = req.params;
+    const user = await User.findOne(
+      {
+        "paymentLink.linkID": PayId,
+      },
+      { "paymentLink.$": 1 }
+    );
+
+    //check if it has expired
+    if (Date.now() > Date.parse(user.paymentLink[0].expired)) {
+      return next(new ErrorResponse("Payment is expired.", 403));
+    }
+
+    return res.status(200).json({ status: true, data: user.paymentLink[0] });
+  } catch (error) {
+    next(error);
+  }
+};
