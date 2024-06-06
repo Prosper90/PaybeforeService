@@ -230,7 +230,11 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       }
       // console.log(`Pay${data.account_id}`, emitData);
 
-      io.emit(`Pay${data.account_id}`, emitData);
+      if (returnPaymentStatus === "incomplete") {
+        io.emit(`Pay${user.paymentLink[0].linkID}`, emitData);
+      } else {
+        io.emit(`Pay${data.account_id}`, emitData);
+      }
 
       // console.log("after emmiting all done");
       //send push notification
