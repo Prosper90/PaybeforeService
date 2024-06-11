@@ -228,12 +228,20 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       } else {
         emitData.reason = returnPaymentStatus;
       }
-      // console.log(`Pay${data.account_id}`, emitData);
-
-      if (returnPaymentStatus === "incomplete") {
-        io.emit(`Pay${user.paymentLink[0].linkID}`, emitData);
-      } else {
-        io.emit(`Pay${data.account_id}`, emitData);
+      // So we return three sockets SuccessPay, IncompletePay, RepaymentPaysuccess,
+      if (data.status === "successful" && returnPaymentStatus === "complete") {
+        io.emit(`PaySuccess${data.account_id}`, emitData);
+      } else if (
+        returnPaymentStatus === "complete" &&
+        data.status === "successful" &&
+        user.paymentLink[0].incompletePaymentCount !== 0
+      ) {
+        io.emit(`RepaymentPaySuccess${user.paymentLink[0].linkID}`, emitData);
+      } else if (
+        data.status === "successful" &&
+        returnPaymentStatus === "incomplete"
+      ) {
+        io.emit(`Incomplete${data.paymentLink[0].linkID}`, emitData);
       }
 
       // console.log("after emmiting all done");

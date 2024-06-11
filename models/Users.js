@@ -42,7 +42,6 @@ const beneficiariesSchema = mongoose.Schema({
 
 const linkGenerated = mongoose.Schema({
   linkID: { type: String },
-
   issue_id: { type: String },
   account_name: { type: String },
   account_number: { type: String },

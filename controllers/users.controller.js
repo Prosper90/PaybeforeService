@@ -248,34 +248,34 @@ exports.withdraw = async (req, res, next) => {
     if (user.balances.main_wallet < amount)
       return next(new ErrorResponse("insufficient funds", 401));
 
-    // Debit user
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: req.user._id },
-      {
-        $inc: { "balances.main_wallet": -amount }, // Decrement the balance
-      },
-      { new: true }
-    );
+    // // Debit user
+    // const updatedUser = await User.findOneAndUpdate(
+    //   { _id: req.user._id },
+    //   {
+    //     $inc: { "balances.main_wallet": -amount }, // Decrement the balance
+    //   },
+    //   { new: true }
+    // );
 
-    //We create a transaction
-    const transaction = new Transaction({
-      type: "Withdrawal",
-      withdrawal: {
-        amount: amount,
-        sender: req.user._id,
-        reciever: {
-          account_name: account_name,
-          account_number: account_number,
-          // beneficiary_bank_name: bank_name,
-          // beneficiary_bank_code: bank_code,
-        },
-        description: description,
-      },
-      owner: req.user.id,
-      status: "pending",
-    });
+    // //We create a transaction
+    // const transaction = new Transaction({
+    //   type: "Withdrawal",
+    //   withdrawal: {
+    //     amount: amount,
+    //     sender: req.user._id,
+    //     reciever: {
+    //       account_name: account_name,
+    //       account_number: account_number,
+    //       // beneficiary_bank_name: bank_name,
+    //       // beneficiary_bank_code: bank_code,
+    //     },
+    //     description: description,
+    //   },
+    //   owner: req.user.id,
+    //   status: "pending",
+    // });
 
-    await transaction.save();
+    // await transaction.save();
 
     const transferUrl = `${process.env.LOCAL_BASE}v1/transfers/balance`;
     console.log(process.env.LOCAL_BASE, transferUrl, "urfl transfers");
@@ -302,97 +302,128 @@ exports.withdraw = async (req, res, next) => {
     );
     console.log(responseTransfer, "checkings");
     if (!responseTransfer?.success) {
-      //Refund user
-      await User.findOneAndUpdate(
-        { _id: req.user._id },
-        {
-          $inc: { "balances.main_wallet": amount }, // increment the balance
-          $push: { recent_transactions: transaction._id },
-        },
-        { new: true }
-      );
-
-      //check if there is pending and if there is, check if the account can take the withdrawal
-      //if it can push in the object else throw error saying inisufficient funds
-      const checkForPendingWithdrawal = await User.findOne(
-        {
-          withdrawalIssued: {
-            $elemMatch: { withrawal_requested: true },
-          },
-        },
-        { "withdrawalIssued.$": 1 }
-      );
-
-      console.log(checkForPendingWithdrawal, "checking the monster");
-      const ref = generateRandomAlphaNumeric(6); //this is to generate track id to know unique payment aside mongodb _id
-
-      if (
-        checkForPendingWithdrawal &&
-        checkForPendingWithdrawal.withdrawalIssued.length > 0
-      ) {
-        const totalWithdrawing =
-          checkForPendingWithdrawal.withdrawalIssued.reduce(
-            (total, withdrawal) => total + withdrawal.withdrawal_Amount,
-            0
-          ) + amount;
-        if (user.balances.main_wallet < totalWithdrawing) {
-          return next(new ErrorResponse(`Insufficient funds.`, 401));
-        }
-      }
-
-      let newWithdrawal = {
-        withrawal_requested: true,
-        withdrawal_Amount: amount,
-        bank_name: bank_name,
-        account_number: account_number,
-        account_name: account_name,
-        track_id: ref,
-        status: "pending",
-      };
-      //call manual withdrawal
-      await User.findOneAndUpdate(
-        { _id: req.user._id },
-        {
-          $push: { withdrawalIssued: newWithdrawal },
-        },
-        { new: true }
-      );
-
-      //update transaction
-      await Transaction.findByIdAndUpdate(
-        { _id: transaction._id },
-        { $set: { status: "pending", track_id: ref } },
-        { new: true }
-      );
-
-      // return next(
-      //   new ErrorResponse(`Account ${responseTransfer?.message}`, 401)
+      // //Refund user
+      // await User.findOneAndUpdate(
+      //   { _id: req.user._id },
+      //   {
+      //     $inc: { "balances.main_wallet": amount }, // increment the balance
+      //     $push: { recent_transactions: transaction._id },
+      //   },
+      //   { new: true }
       // );
+
+      // //check if there is pending and if there is, check if the account can take the withdrawal
+      // //if it can push in the object else throw error saying inisufficient funds
+      // const checkForPendingWithdrawal = await User.findOne(
+      //   {
+      //     withdrawalIssued: {
+      //       $elemMatch: { withrawal_requested: true },
+      //     },
+      //   },
+      //   { "withdrawalIssued.$": 1 }
+      // );
+
+      // console.log(checkForPendingWithdrawal, "checking the monster");
+      // const ref = generateRandomAlphaNumeric(6); //this is to generate track id to know unique payment aside mongodb _id
+
+      // if (
+      //   checkForPendingWithdrawal &&
+      //   checkForPendingWithdrawal.withdrawalIssued.length > 0
+      // ) {
+      //   const totalWithdrawing =
+      //     checkForPendingWithdrawal.withdrawalIssued.reduce(
+      //       (total, withdrawal) => total + withdrawal.withdrawal_Amount,
+      //       0
+      //     ) + amount;
+      //   if (user.balances.main_wallet < totalWithdrawing) {
+      //     return next(new ErrorResponse(`Insufficient funds.`, 401));
+      //   }
+      // }
+
+      // let newWithdrawal = {
+      //   withrawal_requested: true,
+      //   withdrawal_Amount: amount,
+      //   bank_name: bank_name,
+      //   account_number: account_number,
+      //   account_name: account_name,
+      //   track_id: ref,
+      //   status: "pending",
+      // };
+      // //call manual withdrawal
+      // await User.findOneAndUpdate(
+      //   { _id: req.user._id },
+      //   {
+      //     $push: { withdrawalIssued: newWithdrawal },
+      //   },
+      //   { new: true }
+      // );
+
+      // //update transaction
+      // await Transaction.findByIdAndUpdate(
+      //   { _id: transaction._id },
+      //   { $set: { status: "pending", track_id: ref } },
+      //   { new: true }
+      // );
+
+      // // return next(
+      // //   new ErrorResponse(`Account ${responseTransfer?.message}`, 401)
+      // // );
       return res
         .status(200)
         .json({ status: true, message: "Withdrawal Request recieved" });
     }
+
+    //We create a transaction
+    const transaction = new Transaction({
+      type: "Withdrawal",
+      withdrawal: {
+        amount: amount,
+        sender: req.user._id,
+        reciever: {
+          account_name: account_name,
+          account_number: account_number,
+          // beneficiary_bank_name: bank_name,
+          // beneficiary_bank_code: bank_code,
+        },
+        description: description,
+      },
+      owner: req.user.id,
+      status: "pending",
+      track_id: values.reference,
+    });
+
+    await transaction.save();
+
+    // Debit user
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      {
+        $inc: { "balances.main_wallet": -amount }, // Decrement the balance
+        $push: { recent_transactions: transaction._id },
+      },
+      { new: true }
+    );
 
     //get the values of the api result out
     const values = responseTransfer.data;
 
     console.log(values, "checking values out ooooo");
 
-    //update user recent_transaction
-    await User.findOneAndUpdate(
-      { _id: req.user._id },
-      {
-        $push: { recent_transactions: transaction._id },
-      },
-      { new: true }
-    );
+    // //update user recent_transaction
+    // await User.findOneAndUpdate(
+    //   { _id: req.user._id },
+    //   {
+    //     $push: { recent_transactions: transaction._id },
+    //   },
+    //   { new: true }
+    // );
 
-    //update transaction
-    await Transaction.findByIdAndUpdate(
-      { _id: transaction._id },
-      { $set: { track_id: values.reference } },
-      { new: true }
-    );
+    // //update transaction
+    // await Transaction.findByIdAndUpdate(
+    //   { _id: transaction._id },
+    //   { $set: { track_id: values.reference } },
+    //   { new: true }
+    // );
 
     //send and create notification
     //sendNotification("Local transfer", "testing", req.user.device_id, next);
