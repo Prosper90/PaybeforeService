@@ -53,7 +53,7 @@ const ErrorHandler = (err, req, res, next) => {
   // Handle other general errors
   const statusCode = error?.statusCode || 500;
   const message = error.message || "Internal Server Error";
-  console.log("type one checkers");
+  // console.log("type one checkers");
   res.status(statusCode).json({ status: false, message: message });
 };
 

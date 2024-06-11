@@ -83,7 +83,6 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       );
 
       // return res.status(200).json({ data: user });
-
       if (!user) return next(new ErrorResponse("No such user found", 401));
 
       const redeemCode = crypto.randomInt(100000, 1000000);
@@ -103,8 +102,6 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           ? "failed"
           : "success";
 
-      // console.log(returnTxStatus, "tx status");
-
       // const isInComplete = (user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created >
       //   parseFloat((data.amount / 100).toFixed(2)) ) || (user.paymentLink[0].incompletePaymentCount !== 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2)) + user.paymentLink[0].amount_paid);
 
@@ -122,25 +119,21 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           ? "failed"
           : "complete";
 
-      // console.log(returnPaymentStatus, "payments status");
-
       const amountPaid =
         user.paymentLink[0].incompletePaymentCount === 0
           ? parseFloat((data.amount / 100).toFixed(2))
           : parseFloat((data.amount / 100).toFixed(2)) +
             user.paymentLink[0].amount_paid;
 
-      // console.log(amountPaid, "amount paid");
-
       // console.log(user.paymentLink[0].incompletePaymentCount, "opening here sharp");
 
       // console.log(data.amount, "checking the amount sent");
       //update a user
       // 24 hours wait if the payment is cancelled
-      let expire;
+      let ToexpireIfIncomplete;
       if (returnPaymentStatus === "incomplete") {
         const twentyMins = 20 * 60 * 1000;
-        expire = Date.now() + twentyMins; // Current timestamp + 30 minutes
+        ToexpireIfIncomplete = Date.now() + twentyMins; // Current timestamp + 30 minutes
       }
 
       await User.findOneAndUpdate(
@@ -158,17 +151,19 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           },
           $set: {
             "paymentLink.$.isPaid": returnPaymentStatus,
-            "paymentLink.$.redeemCode": redeemCode,
+            ...(data.status === "successful" &&
+              returnPaymentStatus === "complete" && {
+                "paymentLink.$.redeemCode": redeemCode,
+              }),
             "paymentLink.$.amount_paid": amountPaid,
             "paymentLink.$.payment_received": Date.now(),
             ...(returnPaymentStatus === "incomplete" && {
-              "paymentLink.$.expired": expire,
+              "paymentLink.$.expired": ToexpireIfIncomplete,
             }),
           },
         },
         { new: true }
       );
-
       //update transaction
       await Transaction.findOneAndUpdate(
         { track_id: user.paymentLink[0].linkID },
@@ -177,18 +172,17 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
             status: returnTxStatus,
             "payment.isPaid": returnPaymentStatus,
             "payment.sender": {
-              account_name: data.meta_data.sender_account_name,
-              account_number: data.meta_data.sender_account_number,
+              account_name: data.meta_data?.sender_account_name,
+              account_number: data.meta_data?.sender_account_number,
             },
             "payment.amount_paid": amountPaid,
             ...(returnPaymentStatus === "incomplete" && {
-              "payment.expired": expire,
+              "payment.expired": ToexpireIfIncomplete,
             }),
           },
         },
         { new: true }
       );
-
       //return status
       // const returnStatus =
       //   user.paymentLink[0].incompletePaymentCount === 0 && user.paymentLink[0].amount_created > parseFloat((data.amount / 100).toFixed(2))
@@ -203,8 +197,8 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         type: "Payment",
         payment: {
           sender: {
-            account_number: data.meta_data.sender_account_number,
-            account_name: data.meta_data.sender_account_name,
+            account_number: data.meta_data?.sender_account_number,
+            account_name: data.meta_data?.sender_account_name,
           },
           amount: amountPaid,
         },
@@ -234,14 +228,16 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       } else if (
         returnPaymentStatus === "complete" &&
         data.status === "successful" &&
+        user?.paymentLink?.[0]?.incompletePaymentCount !== undefined &&
         user.paymentLink[0].incompletePaymentCount !== 0
       ) {
         io.emit(`RepaymentPaySuccess${user.paymentLink[0].linkID}`, emitData);
       } else if (
         data.status === "successful" &&
-        returnPaymentStatus === "incomplete"
+        returnPaymentStatus === "incomplete" &&
+        user?.paymentLink?.[0]?.linkID !== undefined
       ) {
-        io.emit(`Incomplete${data.paymentLink[0].linkID}`, emitData);
+        io.emit(`Incomplete${user.paymentLink[0].linkID}`, emitData);
       }
 
       // console.log("after emmiting all done");
