@@ -223,7 +223,12 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         emitData.reason = returnPaymentStatus;
       }
       // So we return three sockets SuccessPay, IncompletePay, RepaymentPaysuccess,
-      if (data.status === "successful" && returnPaymentStatus === "complete") {
+      if (
+        data.status === "successful" &&
+        returnPaymentStatus === "complete" &&
+        user?.paymentLink?.[0]?.incompletePaymentCount !== undefined &&
+        user.paymentLink[0].incompletePaymentCount === 0
+      ) {
         io.emit(`PaySuccess${data.account_id}`, emitData);
       } else if (
         returnPaymentStatus === "complete" &&
