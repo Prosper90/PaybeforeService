@@ -373,6 +373,11 @@ exports.withdraw = async (req, res, next) => {
         .json({ status: true, message: "Withdrawal Request recieved" });
     }
 
+    //get the values of the api result out
+    const values = responseTransfer.data;
+
+    console.log(values, "checking values out ooooo");
+
     //We create a transaction
     const transaction = new Transaction({
       type: "Withdrawal",
@@ -403,11 +408,6 @@ exports.withdraw = async (req, res, next) => {
       },
       { new: true }
     );
-
-    //get the values of the api result out
-    const values = responseTransfer.data;
-
-    console.log(values, "checking values out ooooo");
 
     // //update user recent_transaction
     // await User.findOneAndUpdate(
