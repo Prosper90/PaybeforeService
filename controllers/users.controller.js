@@ -278,7 +278,7 @@ exports.withdraw = async (req, res, next) => {
     // await transaction.save();
 
     const transferUrl = `${process.env.LOCAL_BASE}v1/transfers/balance`;
-    console.log(process.env.LOCAL_BASE, transferUrl, "urfl transfers");
+    // console.log(process.env.LOCAL_BASE, transferUrl, "urfl transfers");
     // Define the request headers and data
     const headers = generateLocalHeader(next);
     // Generate headers
@@ -291,7 +291,7 @@ exports.withdraw = async (req, res, next) => {
       narration: description,
       reference: ref,
     };
-    console.log(RequestDataTransfer, "Requesssssssssst data transfer");
+    // console.log(RequestDataTransfer, "Requesssssssssst data transfer");
     //call the transfer endpoint
     const responseTransfer = await makecall(
       transferUrl,
@@ -300,7 +300,7 @@ exports.withdraw = async (req, res, next) => {
       "post",
       next
     );
-    console.log(responseTransfer, "checkings");
+    // console.log(responseTransfer, "checkings");
     if (!responseTransfer?.success) {
       // //Refund user
       // await User.findOneAndUpdate(
@@ -365,12 +365,12 @@ exports.withdraw = async (req, res, next) => {
       //   { new: true }
       // );
 
-      // // return next(
-      // //   new ErrorResponse(`Account ${responseTransfer?.message}`, 401)
-      // // );
-      return res
-        .status(200)
-        .json({ status: true, message: "Withdrawal Request recieved" });
+      return next(
+        new ErrorResponse(`Account ${responseTransfer?.message}`, 401)
+      );
+      // return res
+      //   .status(200)
+      //   .json({ status: true, message: "Withdrawal Request recieved" });
     }
 
     //get the values of the api result out
