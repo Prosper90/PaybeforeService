@@ -280,7 +280,7 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       // if (!user) return next(new ErrorResponse("No such user found", 401));
       // console.log(data.status, "checking something");
       //update created transaction
-      await Transaction.findOneAndUpdate(
+      const txupdate = await Transaction.findOneAndUpdate(
         { track_id: data.reference },
         {
           $set: {
@@ -289,6 +289,16 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         },
         { new: true }
       );
+      //if withdraw fails, recredit user
+      if (data.status !== successful) {
+        await User.findOneAndUpdate(
+          { _id: txupdate.owner },
+          {
+            $inc: { "balances.main_wallet": parseFloat(data.amount / 100) }, // increment the balance
+          },
+          { new: true }
+        );
+      }
 
       //send push notification
       //   notificationStatus = sendNotification(
@@ -299,6 +309,12 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       //     user.device_id,
       //     next
       //   );
+
+      if (data.status === "successful") {
+        io.emit(`WithdrawalSuccess${data.reference}`);
+      } else {
+        io.emit(`WithdrawalFailed${data.reference}`);
+      }
 
       const message = `Withdrawaal ${
         data.status === "successful" ? "successful" : "failed"

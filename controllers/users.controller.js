@@ -236,7 +236,7 @@ exports.withdraw = async (req, res, next) => {
 
   try {
     //check for duplicate_id
-    console.log(req.body, "LLLLLLLLLLLLMMMMMMMMMM");
+    // console.log(req.body, "LLLLLLLLLLLLMMMMMMMMMM");
     // const duplicate = await Transactions.findOne({
     //   duplicate_id: duplicate_id,
     // });
@@ -436,7 +436,7 @@ exports.withdraw = async (req, res, next) => {
     // await newNotify.save();
     return res.status(200).json({
       status: true,
-      data: updatedUser,
+      data: values.reference,
       message: "withdrawal successfull",
     });
   } catch (error) {
