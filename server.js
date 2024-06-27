@@ -45,7 +45,7 @@ app.use(cors());
 app.use(Logger.logRequest);
 
 const EndpointHead = process.env.Endpoint;
-console.log(typeof EndpointHead);
+// console.log(typeof EndpointHead);
 
 app.use(`${EndpointHead}/auth`, auth);
 app.use(`${EndpointHead}/payment`, payment);
