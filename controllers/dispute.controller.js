@@ -91,9 +91,7 @@ exports.Createdispute = async (req, res, next) => {
     let dispute;
     let dispute_id_generated = generateRandomAlphaNumeric(8);
     let remind = false;
-    console.log("logger head oooo", req.body, findDispute, dispute_id);
     if (!findDispute && type !== "transaction") {
-      console.log("working it out")
       dispute = new Dispute({
         type: type,
         status: "pending",
@@ -106,7 +104,6 @@ exports.Createdispute = async (req, res, next) => {
 
       dispute.save();
     } else if (!findDispute && type === "transaction") {
-      console.log("findDispute, issue");
       dispute = new Dispute({
         type: type,
         status: "pending",
@@ -128,7 +125,6 @@ exports.Createdispute = async (req, res, next) => {
       findByPayId.paymentLink[0].linkID === pay_id &&
       type === "transaction"
     ) {
-      console.log("other type log");
       dispute = new Dispute({
         type: type,
         status: "pending",
@@ -144,7 +140,6 @@ exports.Createdispute = async (req, res, next) => {
 
       dispute.save();
     } else {
-      console.log("last one looking");
       dispute = await Dispute.findOneAndUpdate(
         { id: dispute_id },
         {
@@ -183,7 +178,6 @@ exports.FindDispute = async (req, res, next) => {
 exports.CheckID = async (req, res, next) => {
   const { pay_id } = req.params;
   try {
-    console.log(pay_id, "checking pay_id");
     const user = await User.findOne(
       {
         paymentLink: {
@@ -192,7 +186,6 @@ exports.CheckID = async (req, res, next) => {
       },
       { "paymentLink.$": 1 }
     );
-    console.log(user, "here here");
 
     if (!user || user.paymentLink.length === 0) {
       return next(new ErrorResponse("id does not exist", 201));

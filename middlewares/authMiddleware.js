@@ -6,7 +6,6 @@ const { User } = require("../models/Users");
 const requireAuth = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
 
-  console.log("in in in here");
   // Check if the header exists and has the Bearer token format
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return next(new ErrorResponse("unauthorised access", 401));
@@ -23,12 +22,9 @@ const requireAuth = async (req, res, next) => {
     );
   }
 
-  // console.log("Entered");
   //   const decrypted = await decryptToken(token);
-  //   console.log(decrypted, "decrypted");
   jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
     if (err) {
-      console.log("err, from inside tag");
       return next(new ErrorResponse("invalid token", 401));
     }
 

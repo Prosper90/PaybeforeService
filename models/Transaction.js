@@ -4,8 +4,6 @@ const mongoose = require("mongoose");
 const bankSchema = mongoose.Schema({
   account_name: { type: String },
   account_number: { type: String },
-  // beneficiary_bank_name: { type: String },
-  // beneficiary_bank_code: { type: String },
 });
 
 const PaymentSchema = mongoose.Schema({

@@ -1,17 +1,14 @@
 const bcrypt = require("bcrypt");
-const { randomInt } = require("crypto");
 const { makecall } = require("../utils/makeRequest");
-const crypto = require("crypto");
 const ErrorResponse = require("../utils/errorResponse.js");
 const { User } = require("../models/Users");
 const jwt = require("jsonwebtoken");
 const { sendPasswordEmail } = require("../utils/email");
 const { Transaction } = require("../models/Transaction");
 const { generateLocalHeader } = require("../utils/genHeadersData");
-const { generateRandomAlphaNumeric } = require("../utils/createTokens.js");
 
 /*
- * this is to request change if the user forgets their password
+ * This is to request change if the user forgets their password
  *
  */
 exports.ForgetPasswordRequest = async (req, res, next) => {
@@ -196,16 +193,13 @@ exports.updateProfile = async (req, res, next) => {
 exports.AccountName = async (req, res, next) => {
   const { account_number, bank_code } = req.params;
   try {
-    console.log(account_number, bank_code, "checks ooo");
     const verifyUrl = `https://api.paystack.co/bank/resolve?account_number=${account_number}&bank_code=${bank_code}`;
-    console.log(verifyUrl, "checks");
     const headers = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${process.env.LOCAL_SECRET_TWO}`,
       accept: "application/json",
     };
     const gotten = await makecall(verifyUrl, {}, headers, "get", next);
-    console.log(gotten, "gotten");
     if (!gotten?.status) {
       return next(new ErrorResponse("Couldnt get account name"));
     }
@@ -236,7 +230,6 @@ exports.withdraw = async (req, res, next) => {
 
   try {
     //check for duplicate_id
-    // console.log(req.body, "LLLLLLLLLLLLMMMMMMMMMM");
     // const duplicate = await Transactions.findOne({
     //   duplicate_id: duplicate_id,
     // });
@@ -248,37 +241,7 @@ exports.withdraw = async (req, res, next) => {
     if (user.balances.main_wallet < amount)
       return next(new ErrorResponse("insufficient funds", 401));
 
-    // // Debit user
-    // const updatedUser = await User.findOneAndUpdate(
-    //   { _id: req.user._id },
-    //   {
-    //     $inc: { "balances.main_wallet": -amount }, // Decrement the balance
-    //   },
-    //   { new: true }
-    // );
-
-    // //We create a transaction
-    // const transaction = new Transaction({
-    //   type: "Withdrawal",
-    //   withdrawal: {
-    //     amount: amount,
-    //     sender: req.user._id,
-    //     reciever: {
-    //       account_name: account_name,
-    //       account_number: account_number,
-    //       // beneficiary_bank_name: bank_name,
-    //       // beneficiary_bank_code: bank_code,
-    //     },
-    //     description: description,
-    //   },
-    //   owner: req.user.id,
-    //   status: "pending",
-    // });
-
-    // await transaction.save();
-
     const transferUrl = `${process.env.LOCAL_BASE}v1/transfers/balance`;
-    // console.log(process.env.LOCAL_BASE, transferUrl, "urfl transfers");
     // Define the request headers and data
     const headers = generateLocalHeader(next);
     // Generate headers
@@ -291,7 +254,6 @@ exports.withdraw = async (req, res, next) => {
       narration: description,
       reference: ref,
     };
-    // console.log(RequestDataTransfer, "Requesssssssssst data transfer");
     //call the transfer endpoint
     const responseTransfer = await makecall(
       transferUrl,
@@ -300,83 +262,14 @@ exports.withdraw = async (req, res, next) => {
       "post",
       next
     );
-    // console.log(responseTransfer, "checkings");
     if (!responseTransfer?.success) {
-      // //Refund user
-      // await User.findOneAndUpdate(
-      //   { _id: req.user._id },
-      //   {
-      //     $inc: { "balances.main_wallet": amount }, // increment the balance
-      //     $push: { recent_transactions: transaction._id },
-      //   },
-      //   { new: true }
-      // );
-
-      // //check if there is pending and if there is, check if the account can take the withdrawal
-      // //if it can push in the object else throw error saying inisufficient funds
-      // const checkForPendingWithdrawal = await User.findOne(
-      //   {
-      //     withdrawalIssued: {
-      //       $elemMatch: { withrawal_requested: true },
-      //     },
-      //   },
-      //   { "withdrawalIssued.$": 1 }
-      // );
-
-      // console.log(checkForPendingWithdrawal, "checking the monster");
-      // const ref = generateRandomAlphaNumeric(6); //this is to generate track id to know unique payment aside mongodb _id
-
-      // if (
-      //   checkForPendingWithdrawal &&
-      //   checkForPendingWithdrawal.withdrawalIssued.length > 0
-      // ) {
-      //   const totalWithdrawing =
-      //     checkForPendingWithdrawal.withdrawalIssued.reduce(
-      //       (total, withdrawal) => total + withdrawal.withdrawal_Amount,
-      //       0
-      //     ) + amount;
-      //   if (user.balances.main_wallet < totalWithdrawing) {
-      //     return next(new ErrorResponse(`Insufficient funds.`, 401));
-      //   }
-      // }
-
-      // let newWithdrawal = {
-      //   withrawal_requested: true,
-      //   withdrawal_Amount: amount,
-      //   bank_name: bank_name,
-      //   account_number: account_number,
-      //   account_name: account_name,
-      //   track_id: ref,
-      //   status: "pending",
-      // };
-      // //call manual withdrawal
-      // await User.findOneAndUpdate(
-      //   { _id: req.user._id },
-      //   {
-      //     $push: { withdrawalIssued: newWithdrawal },
-      //   },
-      //   { new: true }
-      // );
-
-      // //update transaction
-      // await Transaction.findByIdAndUpdate(
-      //   { _id: transaction._id },
-      //   { $set: { status: "pending", track_id: ref } },
-      //   { new: true }
-      // );
-
       return next(
         new ErrorResponse(`Account ${responseTransfer?.message}`, 401)
       );
-      // return res
-      //   .status(200)
-      //   .json({ status: true, message: "Withdrawal Request recieved" });
     }
 
     //get the values of the api result out
     const values = responseTransfer.data;
-
-    console.log(values, "checking values out ooooo");
 
     //We create a transaction
     const transaction = new Transaction({
@@ -387,8 +280,6 @@ exports.withdraw = async (req, res, next) => {
         reciever: {
           account_name: account_name,
           account_number: account_number,
-          // beneficiary_bank_name: bank_name,
-          // beneficiary_bank_code: bank_code,
         },
         description: description,
       },
@@ -409,31 +300,6 @@ exports.withdraw = async (req, res, next) => {
       { new: true }
     );
 
-    // //update user recent_transaction
-    // await User.findOneAndUpdate(
-    //   { _id: req.user._id },
-    //   {
-    //     $push: { recent_transactions: transaction._id },
-    //   },
-    //   { new: true }
-    // );
-
-    // //update transaction
-    // await Transaction.findByIdAndUpdate(
-    //   { _id: transaction._id },
-    //   { $set: { track_id: values.reference } },
-    //   { new: true }
-    // );
-
-    //send and create notification
-    //sendNotification("Local transfer", "testing", req.user.device_id, next);
-    // const newNotify = new Notification({
-    //   title: `local transfer`,
-    //   message: `your local transfer to is successful`,
-    //   url: "sampleurl",
-    //   transactionId: transaction._id,
-    // });
-    // await newNotify.save();
     return res.status(200).json({
       status: true,
       data: values.reference,

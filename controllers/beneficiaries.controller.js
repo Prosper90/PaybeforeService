@@ -18,8 +18,6 @@ exports.CreateBene = async (req, res, next) => {
     }
 
     beneAdd = { ...req.body };
-    //   if (req.body.tag) beneAdd.account_Name = getBene.first_name;
-    //console.log(beneAdd, "bene Add");
     const createBene = await User.findOneAndUpdate(
       { _id: req.user._id },
       {

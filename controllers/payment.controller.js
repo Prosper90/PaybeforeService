@@ -117,16 +117,11 @@ exports.GeneratePaymentLink = async (req, res, next) => {
     "post",
     next
   );
-  // console.log(responseLocal, "lets see again");
   if (!responseLocal?.success) {
     return next(new ErrorResponse(responseLocal.message, 400));
   }
   const values = responseLocal.data;
-  // console.log(values, "val val values");
   const appendId = generateRandomAlphaNumeric(6);
-  //const base = `${req.protocol}://${req.hostname}`;
-  //const link = `${base}/${appendId}`;
-
   // 30 minutes in milliseconds
   const thirtyMins = 25 * 60 * 1000;
   // const twoMins = 2 * 60 * 1000; //for testing
@@ -493,7 +488,6 @@ exports.MakePaymentToLink = async (req, res, next) => {
       amount: amount * 100, //sample 1000
       account_id: userPayment.paymentLink[0].issue_id, //sample id
     };
-    console.log(requestData, "request Data");
     // Define the request headers and data
     const headersLocal = generateLocalHeader(next);
     const response = await makecall(
@@ -503,7 +497,6 @@ exports.MakePaymentToLink = async (req, res, next) => {
       "post",
       next
     );
-    console.log(response, "here oooo");
     if (!response?.success)
       return next(new ErrorResponse(response.message, 401));
 
@@ -538,8 +531,6 @@ exports.CancelPayment = async (req, res, next) => {
         },
       }
     );
-
-    console.log(check, "checkers");
 
     // if (check.paymentLink.length === 0) {
     //   return next(new ErrorResponse("no such payment", 401));

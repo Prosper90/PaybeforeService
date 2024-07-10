@@ -45,7 +45,6 @@ app.use(cors());
 app.use(Logger.logRequest);
 
 const EndpointHead = process.env.Endpoint;
-// console.log(typeof EndpointHead);
 
 app.use(`${EndpointHead}/auth`, auth);
 app.use(`${EndpointHead}/payment`, payment);
@@ -125,9 +124,6 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
           : parseFloat((data.amount / 100).toFixed(2)) +
             user.paymentLink[0].amount_paid;
 
-      // console.log(user.paymentLink[0].incompletePaymentCount, "opening here sharp");
-
-      // console.log(data.amount, "checking the amount sent");
       //update a user
       // 24 hours wait if the payment is cancelled
       let ToexpireIfIncomplete;
@@ -245,7 +241,6 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
         io.emit(`Incomplete${user.paymentLink[0].linkID}`, emitData);
       }
 
-      // console.log("after emmiting all done");
       //send push notification
       // notificationStatus = sendNotification(
       //   "Deposit",
@@ -278,7 +273,6 @@ app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {
       // const tx = await Transaction.findOne({ track_id: data.reference });
       // const user = await User.findOne({ _id: tx?.sender.wallet });
       // if (!user) return next(new ErrorResponse("No such user found", 401));
-      // console.log(data.status, "checking something");
       //update created transaction
       const txupdate = await Transaction.findOneAndUpdate(
         { track_id: data.reference },
