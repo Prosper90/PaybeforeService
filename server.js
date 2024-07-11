@@ -8,7 +8,6 @@ const referral = require("./routes/referrals");
 const transaction = require("./routes/transaction");
 const bene = require("./routes/beneficiaries");
 const dispute = require("./routes/dispute");
-const webhook = require("./routes/webhook");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -54,7 +53,6 @@ app.use(`${EndpointHead}/referral`, referral);
 app.use(`${EndpointHead}/bene`, bene);
 app.use(`${EndpointHead}/dispute`, dispute);
 app.use(`${EndpointHead}/admin`, admin);
-// app.use(`${EndpointHead}/webhook`, webhook);
 
 //Webhook Handling
 app.post(`${EndpointHead}/webhook/Handle`, async function (req, res, next) {

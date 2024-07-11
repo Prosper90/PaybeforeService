@@ -36,8 +36,6 @@ exports.RegisterWithOtp = async (req, res, next) => {
     user = await user.save();
 
     await sendOtp("email", otp, req.body.email, next);
-    // console.log(sent, "checking upon depoying");
-    // if (!sent.status) return next(new ErrorResponse(sent.message, 401));
     return res.status(200).json({ status: true, message: "otp sent" });
   } catch (error) {
     next(error);
@@ -46,7 +44,6 @@ exports.RegisterWithOtp = async (req, res, next) => {
 
 //Resend Auth
 exports.ResendOtp = async (req, res, next) => {
-  // console.log("11111111111");
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return next(new ErrorResponse("Email  doesnt exist", 401));
@@ -71,10 +68,8 @@ exports.ResendOtp = async (req, res, next) => {
 
 //Verify otp
 exports.VerifyOtpSignUp = async (req, res, next) => {
-  //console.log(req.user);
   //send Otp to req.body.number
   const otpRecieved = req.body.otp;
-  // console.log(otpRecieved, "checkers");
   const user = await User.findOne({ otp: otpRecieved });
   if (!user) {
     return next(new ErrorResponse("Invalid otp sent", 401));
@@ -110,7 +105,6 @@ exports.CreateAccount = async (req, res, next) => {
 
   try {
     //Add checks for some other things
-    console.log(req.query, "prospeeeee");
     const userCheck = await User.findOne({ email: email });
     if (!userCheck) return next(new ErrorResponse("User not found", 401));
 
@@ -121,9 +115,6 @@ exports.CreateAccount = async (req, res, next) => {
     const salt = await bcrypt.genSalt();
     const hashedpassword = await bcrypt.hash(password, salt);
     const refID = crypto.randomInt(100000, 1000000);
-
-    //console.log(req.query, "await async");
-    // return res.status(200).json({ data: req.query });
 
     const user = await User.findOneAndUpdate(
       { _id: userCheck },
@@ -170,7 +161,6 @@ exports.CreateAccount = async (req, res, next) => {
 };
 
 exports.loginUser = async (req, res, next) => {
-  console.log(req.body, "Hello here");
   const { email, password } = req.body;
 
   try {
